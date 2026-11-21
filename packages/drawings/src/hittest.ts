@@ -25,11 +25,12 @@ export function pointInRect(
   y1: number,
   x2: number,
   y2: number,
+  tol = 0,
 ): boolean {
-  const left = Math.min(x1, x2);
-  const right = Math.max(x1, x2);
-  const top = Math.min(y1, y2);
-  const bottom = Math.max(y1, y2);
+  const left = Math.min(x1, x2) - tol;
+  const right = Math.max(x1, x2) + tol;
+  const top = Math.min(y1, y2) - tol;
+  const bottom = Math.max(y1, y2) + tol;
   return px >= left && px <= right && py >= top && py <= bottom;
 }
 

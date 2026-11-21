@@ -5,10 +5,12 @@ import {
   hitTestHandle,
   pointInRect,
   pointNearPoint,
+  translateAnchors,
 } from '../src/hittest';
 import {
   deserializeDrawings,
   describeDrawing,
+  groupBySymbol,
   nextZIndex,
   serializeDrawings,
 } from '../src/serialize';
@@ -27,6 +29,9 @@ describe('geometry', () => {
     expect(pointInRect(5, 5, 0, 0, 10, 10)).toBe(true);
     expect(pointInRect(15, 5, 0, 0, 10, 10)).toBe(false);
     expect(pointInRect(5, 5, 10, 10, 0, 0)).toBe(true); // reversed corners
+    // tolerance expands the rectangle on all sides
+    expect(pointInRect(12, 5, 0, 0, 10, 10, 3)).toBe(true);
+    expect(pointInRect(14, 5, 0, 0, 10, 10, 3)).toBe(false);
     expect(pointNearPoint(1, 1, 0, 0, 2)).toBe(true);
     expect(pointNearPoint(5, 5, 0, 0, 2)).toBe(false);
   });
@@ -125,6 +130,43 @@ describe('hit testing drawings', () => {
     expect(hitTestDrawing(999, 103, { drawing: hline, points: [{ x: 0, y: 100 }] })).toBe(true);
     expect(hitTestDrawing(999, 120, { drawing: hline, points: [{ x: 0, y: 100 }] })).toBe(false);
   });
+
+  it('translates anchors through pixel/time converters', () => {
+    const anchors = [
+      { time: 100, price: 50 },
+      { time: 200, price: 60 },
+    ];
+    // identity projectors: px == time, py == price; converters shift by 1
+    const moved = translateAnchors(
+      anchors,
+      10,
+      -5,
+      (px) => px,
+      (py) => py,
+      (a) => a.time,
+      (a) => a.price,
+      (a) => ({ x: a.time, y: a.price }),
+    );
+    expect(moved).toEqual([
+      { time: 110, price: 45 },
+      { time: 210, price: 55 },
+    ]);
+  });
+
+  it('falls back to original time/price when converters return null', () => {
+    const anchors = [{ time: 100, price: 50 }];
+    const moved = translateAnchors(
+      anchors,
+      10,
+      5,
+      () => null as unknown as number,
+      () => null as unknown as number,
+      (a) => a.time,
+      (a) => a.price,
+      (a) => ({ x: a.time, y: a.price }),
+    );
+    expect(moved).toEqual([{ time: 100, price: 50 }]);
+  });
 });
 
 describe('serialization', () => {
@@ -172,6 +214,17 @@ describe('serialization', () => {
     expect(nextZIndex([a, b])).toBe(10);
     expect(describeDrawing(a)).toBe('Rectangle');
     expect(describeDrawing(b)).toBe('Anchored VWAP');
+  });
+
+  it('groups drawings by symbol', () => {
+    const a = newDrawing('rectangle', 'BTC/USDT', [], 1);
+    const b = newDrawing('trendline', 'XAU/USD', [], 2);
+    const c = newDrawing('ray', 'BTC/USDT', [], 3);
+    const groups = groupBySymbol([a, b, c]);
+    expect(Object.keys(groups).sort()).toEqual(['BTC/USDT', 'XAU/USD']);
+    expect(groups['BTC/USDT']).toHaveLength(2);
+    expect(groups['XAU/USD']).toHaveLength(1);
+    expect(groupBySymbol([])).toEqual({});
   });
 
   it('declares minimum anchor counts for every tool', () => {
