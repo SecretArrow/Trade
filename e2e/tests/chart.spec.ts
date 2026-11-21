@@ -26,8 +26,8 @@ test.describe('charting app (demo data)', () => {
   });
 
   test('switches timeframe and chart type', async ({ page }) => {
-    const { viewport } = page;
-    test.skip(viewport && viewport.width < 900, 'desktop layout only');
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
     await page.goto('/?src=demo');
     await page.getByRole('button', { name: '1h', exact: true }).click();
     await expect(page.locator('.legend-tf')).toHaveText('1h');
@@ -62,8 +62,8 @@ test.describe('charting app (demo data)', () => {
   });
 
   test('draws a trendline that persists after reload', async ({ page }) => {
-    const { viewport } = page;
-    test.skip(viewport && viewport.width < 900, 'desktop layout only');
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
     await page.goto('/?src=demo');
     await expect(page.locator('canvas').first()).toBeVisible();
     await page.locator('.tool-btn').first().click(); // trendline tool
