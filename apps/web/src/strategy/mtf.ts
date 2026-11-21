@@ -10,6 +10,8 @@
  * - SND yang bertumpuk (nesting) antar-TF = setup terkuat.
  *
  * Modul ini hanya berisi konstanta + pure helper — UI/state di tempat lain.
+ * Persistence: tradeMode/mtfBias/mtfSteps disimpan di store (zustand persist
+ * schema v4); migrasi backfill default untuk user lama.
  */
 
 import type { Timeframe } from '@trade/core';
