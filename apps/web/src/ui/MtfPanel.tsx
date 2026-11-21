@@ -2,12 +2,7 @@ import { useMemo } from 'react';
 import { useStore } from '../state/store';
 import { translate } from '../i18n';
 import { detectNesting } from '../strategy/mtf';
-import {
-  MTF_STEPS,
-  TRADE_MODES,
-  TRADE_MODE_ORDER,
-  tfRoleInMode,
-} from '../strategy/mtf';
+import { MTF_STEPS, TRADE_MODES, TRADE_MODE_ORDER, tfRoleInMode } from '../strategy/mtf';
 import type { BiasDirection, TradeMode } from '../strategy/mtf';
 
 const ROLE_TINT: Record<'major' | 'confirm' | 'trading', string> = {
@@ -65,8 +60,8 @@ export function MtfPanel() {
             >
               <span className="mtf-mode-name">{t(`trade_mode_${m}`)}</span>
               <span className="mtf-mode-cascade">
-                {c.major} <span className="arrow">→</span> {c.confirm} <span className="arrow">→</span>{' '}
-                {c.trading}
+                {c.major} <span className="arrow">→</span> {c.confirm}{' '}
+                <span className="arrow">→</span> {c.trading}
               </span>
               <span className="mtf-mode-desc">{t(`trade_mode_${m}_desc`)}</span>
             </button>
@@ -80,9 +75,15 @@ export function MtfPanel() {
             {(['major', 'confirm', 'trading'] as const).map((role) => {
               const tf = cascade[role];
               const isActive = activeTf === tf;
-              const isMember = activeTf ? tfRoleInMode(activeTf, mode as Exclude<TradeMode, 'off'>) === role : false;
+              const isMember = activeTf
+                ? tfRoleInMode(activeTf, mode as Exclude<TradeMode, 'off'>) === role
+                : false;
               const roleLabelKey =
-                role === 'major' ? 'major' : role === 'confirm' ? 'mtf_confirm_role' : 'mtf_trading_role';
+                role === 'major'
+                  ? 'major'
+                  : role === 'confirm'
+                    ? 'mtf_confirm_role'
+                    : 'mtf_trading_role';
               return (
                 <button
                   key={role}
@@ -157,7 +158,9 @@ export function MtfPanel() {
                       checked={!!settings.mtfSteps[step.key]}
                       onChange={() => useStore.getState().toggleMtfStep(step.key)}
                     />
-                    <span className="mtf-check-label">{locale === 'id' ? step.labelId : step.label}</span>
+                    <span className="mtf-check-label">
+                      {locale === 'id' ? step.labelId : step.label}
+                    </span>
                     {!step.required && <span className="mtf-check-tag">bonus</span>}
                   </label>
                 </li>

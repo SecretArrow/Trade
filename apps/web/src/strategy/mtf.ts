@@ -80,14 +80,54 @@ export interface MtfStep {
 }
 
 export const MTF_STEPS: readonly MtfStep[] = [
-  { key: 'mode', label: 'Mode locked (Swing/Intraday/Scalping)', labelId: 'Mode terkunci', required: true },
-  { key: 'major-bias', label: 'Major bias clear (Buy/Sell)', labelId: 'Bias Major jelas', required: true },
-  { key: 'price-in-major-zone', label: 'Price reached Major zone', labelId: 'Harga masuk zona Major', required: true },
-  { key: 'confirm-evidence', label: 'Confirm: trendline/structure/SND', labelId: 'Confirm: trendline/struktur/SND', required: true },
-  { key: 'entry-snd', label: 'Trading TF: SND zone present', labelId: 'Trading TF: zona SND ada', required: true },
-  { key: 'nesting', label: 'SND nested across TFs (stronger)', labelId: 'SND bertumpuk antar-TF (lebih kuat)', required: false },
-  { key: 'sl-outside-zone', label: 'SL outside zone + spread buffer', labelId: 'SL di luar zona + buffer spread', required: true },
-  { key: 'tp-capped', label: 'TP capped at next larger TF zone', labelId: 'TP dibatasi zona TF besar berikutnya', required: true },
+  {
+    key: 'mode',
+    label: 'Mode locked (Swing/Intraday/Scalping)',
+    labelId: 'Mode terkunci',
+    required: true,
+  },
+  {
+    key: 'major-bias',
+    label: 'Major bias clear (Buy/Sell)',
+    labelId: 'Bias Major jelas',
+    required: true,
+  },
+  {
+    key: 'price-in-major-zone',
+    label: 'Price reached Major zone',
+    labelId: 'Harga masuk zona Major',
+    required: true,
+  },
+  {
+    key: 'confirm-evidence',
+    label: 'Confirm: trendline/structure/SND',
+    labelId: 'Confirm: trendline/struktur/SND',
+    required: true,
+  },
+  {
+    key: 'entry-snd',
+    label: 'Trading TF: SND zone present',
+    labelId: 'Trading TF: zona SND ada',
+    required: true,
+  },
+  {
+    key: 'nesting',
+    label: 'SND nested across TFs (stronger)',
+    labelId: 'SND bertumpuk antar-TF (lebih kuat)',
+    required: false,
+  },
+  {
+    key: 'sl-outside-zone',
+    label: 'SL outside zone + spread buffer',
+    labelId: 'SL di luar zona + buffer spread',
+    required: true,
+  },
+  {
+    key: 'tp-capped',
+    label: 'TP capped at next larger TF zone',
+    labelId: 'TP dibatasi zona TF besar berikutnya',
+    required: true,
+  },
 ] as const;
 
 export type BiasDirection = 'none' | 'buy' | 'sell';

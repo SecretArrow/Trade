@@ -160,7 +160,11 @@ export function LeftToolbar() {
             ? primaryEntry.title
             : `${primaryEntry.title} · ${activeEntry.title}`;
         return (
-          <div key={group.id} className="tool-flyout" ref={openFlyout === group.id ? flyoutRef : undefined}>
+          <div
+            key={group.id}
+            className="tool-flyout"
+            ref={openFlyout === group.id ? flyoutRef : undefined}
+          >
             <div className="tool-flyout-row">
               <button
                 type="button"
@@ -181,7 +185,14 @@ export function LeftToolbar() {
                 onClick={() => setOpenFlyout(openFlyout === group.id ? null : group.id)}
               >
                 <svg width="10" height="10" viewBox="0 0 10 10" aria-hidden="true">
-                  <path d="M2 3.5 L5 6.5 L8 3.5" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M2 3.5 L5 6.5 L8 3.5"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -225,16 +236,19 @@ export function LeftToolbar() {
               if (entry.tool === 'magnet') return useStore.getState().toggleMagnet();
               if (entry.tool === 'hide-all') {
                 const next = !allHidden;
-                for (const d of symbolDrawings) useStore.getState().updateDrawing(d.id, { hidden: next });
+                for (const d of symbolDrawings)
+                  useStore.getState().updateDrawing(d.id, { hidden: next });
                 return;
               }
               if (entry.tool === 'show-all') {
-                for (const d of symbolDrawings) useStore.getState().updateDrawing(d.id, { hidden: false });
+                for (const d of symbolDrawings)
+                  useStore.getState().updateDrawing(d.id, { hidden: false });
                 return;
               }
               if (entry.tool === 'lock-all') {
                 const next = !allLocked;
-                for (const d of symbolDrawings) useStore.getState().updateDrawing(d.id, { locked: next });
+                for (const d of symbolDrawings)
+                  useStore.getState().updateDrawing(d.id, { locked: next });
                 return;
               }
             };

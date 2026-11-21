@@ -355,7 +355,8 @@ export const useStore = create<AppState>()(
             settings: {
               ...get().settings,
               tradeMode: mode,
-              mtfSteps: mode === 'off' ? defaultMtfSteps() : { ...get().settings.mtfSteps, mode: true },
+              mtfSteps:
+                mode === 'off' ? defaultMtfSteps() : { ...get().settings.mtfSteps, mode: true },
             },
           }),
         setMtfBias: (bias) => {
