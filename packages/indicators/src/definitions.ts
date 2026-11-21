@@ -600,7 +600,7 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     plots: {},
     compute: (c, p, ctx) => {
       const s = num(p, 'strength', 3);
-      const resample = (ctx as { resample?: (x: Candle[]) => Candle[] }).resample;
+      const resample = ctx?.resample as ((candles: Candle[]) => Candle[]) | undefined;
       if (!resample) return { plots: {}, zones: [] };
       const zones = mtfSupportResistance(c, resample, {
         left: s,

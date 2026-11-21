@@ -158,7 +158,7 @@ export const useStore = create<AppState>()(
       const pushHistory = () => {
         undoStack.push({ drawings: [...get().drawings] });
         if (undoStack.length > 50) undoStack.shift();
-        redoStack = [];
+        redoStack.length = 0;
       };
 
       return {
@@ -403,7 +403,7 @@ export const useStore = create<AppState>()(
           if (!Array.isArray(state.drawings)) state.drawings = [];
           if (!Array.isArray(state.alerts)) state.alerts = [];
         }
-        return state as AppState;
+        return state as unknown as AppState;
       },
     },
   ),

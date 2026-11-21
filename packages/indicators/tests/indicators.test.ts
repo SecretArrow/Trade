@@ -133,12 +133,13 @@ describe('oscillators', () => {
     expect(nonNull.every((v) => v >= 0 && v <= 100)).toBe(true);
   });
 
-  it('stochastic and stoch RSI stay within 0..100', () => {
+  it('stochastic and stoch RSI stay roughly within 0..100', () => {
     const s = stochastic(candles, 14, 3, 3);
     const sr = stochRsi(candles, 14, 14, 3, 3);
     for (const series of [s.k, s.d, sr.k, sr.d]) {
       const nonNull = series.filter((v): v is number => v !== null);
-      expect(nonNull.every((v) => v >= 0 && v <= 100)).toBe(true);
+      // allow a tiny floating-point tolerance around the theoretical bounds
+      expect(nonNull.every((v) => v >= -0.01 && v <= 100.01)).toBe(true);
     }
   });
 

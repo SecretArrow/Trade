@@ -50,7 +50,12 @@ export interface PaneOutputs {
   outputs: { id: string; type: string; output: IndicatorOutput | null }[];
 }
 
-function themeOf(theme: ThemeName): (typeof THEME_COLORS)['dark'] {
+function themeOf(theme: ThemeName): {
+  background: string;
+  text: string;
+  grid: string;
+  border: string;
+} {
   return theme === 'light' ? THEME_COLORS.light : THEME_COLORS.dark;
 }
 
