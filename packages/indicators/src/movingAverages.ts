@@ -55,7 +55,10 @@ export function hma(candles: Candle[], period: number, source: SourceKey = 'clos
 export function dema(candles: Candle[], period: number, source: SourceKey = 'close'): PlotValues {
   const values = sourceSeries(candles, source);
   const e1 = emaValues(values, period);
-  const e2 = emaValues(e1.map((x) => x ?? 0), period);
+  const e2 = emaValues(
+    e1.map((x) => x ?? 0),
+    period,
+  );
   return e1.map((x, i) => {
     const y = e2[i];
     if (x === null || y === null) return null;
@@ -66,8 +69,14 @@ export function dema(candles: Candle[], period: number, source: SourceKey = 'clo
 export function tema(candles: Candle[], period: number, source: SourceKey = 'close'): PlotValues {
   const values = sourceSeries(candles, source);
   const e1 = emaValues(values, period);
-  const e2 = emaValues(e1.map((x) => x ?? 0), period);
-  const e3 = emaValues(e2.map((x) => x ?? 0), period);
+  const e2 = emaValues(
+    e1.map((x) => x ?? 0),
+    period,
+  );
+  const e3 = emaValues(
+    e2.map((x) => x ?? 0),
+    period,
+  );
   return e1.map((x, i) => {
     const y = e2[i];
     const z = e3[i];

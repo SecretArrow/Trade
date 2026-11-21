@@ -165,7 +165,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
       { key: 'spacing', label: 'Spacing', type: 'number', default: 10, min: 1, max: 100 },
     ],
     plots: {},
-    compute: (c, p) => ({ plots: maRibbon(c, num(p, 'period', 10), num(p, 'count', 6), num(p, 'spacing', 10)) }),
+    compute: (c, p) => ({
+      plots: maRibbon(c, num(p, 'period', 10), num(p, 'count', 6), num(p, 'spacing', 10)),
+    }),
   },
   {
     type: 'envelope',
@@ -193,7 +195,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
       sourceParam,
     ],
     plots: { upper: plot(C.gray), middle: plot(C.blue), lower: plot(C.gray) },
-    compute: (c, p) => ({ plots: bollingerBands(c, num(p, 'period', 20), num(p, 'mult', 2), src(p)) }),
+    compute: (c, p) => ({
+      plots: bollingerBands(c, num(p, 'period', 20), num(p, 'mult', 2), src(p)),
+    }),
   },
   {
     type: 'keltner',
@@ -203,7 +207,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     params: [
       { key: 'emaPeriod', label: 'EMA period', type: 'number', default: 20, min: 2, max: 200 },
       { key: 'atrPeriod', label: 'ATR period', type: 'number', default: 10, min: 2, max: 200 },
-      { key: 'mult', label: 'ATR multiplier', type: 'number', default: 2, min: 0.5, max: 5, step: 0.1 },
+      {
+        key: 'mult',
+        label: 'ATR multiplier',
+        type: 'number',
+        default: 2,
+        min: 0.5,
+        max: 5,
+        step: 0.1,
+      },
     ],
     plots: { upper: plot(C.teal), middle: plot(C.blue), lower: plot(C.teal) },
     compute: (c, p) => ({
@@ -262,7 +274,13 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     plots: { k: plot(C.blue), d: plot(C.orange) },
     compute: (c, p) => ({
       plots: (() => {
-        const r = stochRsi(c, num(p, 'rsiPeriod', 14), num(p, 'stochPeriod', 14), num(p, 'kPeriod', 3), num(p, 'dPeriod', 3));
+        const r = stochRsi(
+          c,
+          num(p, 'rsiPeriod', 14),
+          num(p, 'stochPeriod', 14),
+          num(p, 'kPeriod', 3),
+          num(p, 'dPeriod', 3),
+        );
         return { k: r.k, d: r.d };
       })(),
     }),
@@ -374,7 +392,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     group: 'trend',
     pane: 'main',
     params: [
-      { key: 'step', label: 'Step', type: 'number', default: 0.02, min: 0.01, max: 0.2, step: 0.01 },
+      {
+        key: 'step',
+        label: 'Step',
+        type: 'number',
+        default: 0.02,
+        min: 0.01,
+        max: 0.2,
+        step: 0.01,
+      },
       { key: 'max', label: 'Max', type: 'number', default: 0.2, min: 0.05, max: 1, step: 0.05 },
     ],
     plots: { psar: plot(C.orange, 1) },
@@ -390,7 +416,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     pane: 'main',
     params: [
       { key: 'atrPeriod', label: 'ATR length', type: 'number', default: 10, min: 2, max: 100 },
-      { key: 'mult', label: 'Multiplier', type: 'number', default: 3, min: 0.5, max: 10, step: 0.1 },
+      {
+        key: 'mult',
+        label: 'Multiplier',
+        type: 'number',
+        default: 3,
+        min: 0.5,
+        max: 10,
+        step: 0.1,
+      },
     ],
     plots: { supertrend: plot(C.green) },
     compute: (c, p) => {
@@ -417,7 +451,13 @@ export const DEFINITIONS: IndicatorDefinition[] = [
       chikou: plot(C.purple, 1),
     },
     compute: (c, p) => {
-      const r = ichimoku(c, num(p, 'conversion', 9), num(p, 'base', 26), num(p, 'spanB', 52), num(p, 'displacement', 26));
+      const r = ichimoku(
+        c,
+        num(p, 'conversion', 9),
+        num(p, 'base', 26),
+        num(p, 'spanB', 52),
+        num(p, 'displacement', 26),
+      );
       return {
         plots: {
           tenkan: r.tenkan,
@@ -437,7 +477,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Volume',
     group: 'volume',
     pane: 'main',
-    params: [{ key: 'maPeriod', label: 'MA period', type: 'number', default: 20, min: 1, max: 200 }],
+    params: [
+      { key: 'maPeriod', label: 'MA period', type: 'number', default: 20, min: 1, max: 200 },
+    ],
     plots: { volume: plot(C.gray, 1), volumeMa: plot(C.orange, 1) },
     compute: (c, p) => ({ plots: volumeWithMa(c, num(p, 'maPeriod', 20)) }),
   },
@@ -509,7 +551,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     pane: 'main',
     params: [
       { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
-      { key: 'clusterPct', label: 'Cluster %', type: 'number', default: 0.25, min: 0.05, max: 2, step: 0.05 },
+      {
+        key: 'clusterPct',
+        label: 'Cluster %',
+        type: 'number',
+        default: 0.25,
+        min: 0.05,
+        max: 2,
+        step: 0.05,
+      },
       { key: 'maxZones', label: 'Max zones', type: 'number', default: 8, min: 1, max: 20 },
     ],
     plots: {},
@@ -537,7 +587,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     pane: 'main',
     params: [
       { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
-      { key: 'clusterPct', label: 'Cluster %', type: 'number', default: 0.3, min: 0.05, max: 2, step: 0.05 },
+      {
+        key: 'clusterPct',
+        label: 'Cluster %',
+        type: 'number',
+        default: 0.3,
+        min: 0.05,
+        max: 2,
+        step: 0.05,
+      },
     ],
     plots: {},
     compute: (c, p, ctx) => {
@@ -550,7 +608,10 @@ export const DEFINITIONS: IndicatorDefinition[] = [
         clusterPct: num(p, 'clusterPct', 0.3),
         maxZones: 6,
       });
-      return { plots: {}, zones: zones.map((z) => ({ ...z, label: `HTF ${z.label} [${z.state}]` })) };
+      return {
+        plots: {},
+        zones: zones.map((z) => ({ ...z, label: `HTF ${z.label} [${z.state}]` })),
+      };
     },
   },
   {
@@ -559,7 +620,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     group: 'structure',
     pane: 'main',
     params: [
-      { key: 'tolerancePct', label: 'Tolerance %', type: 'number', default: 0.15, min: 0.01, max: 2, step: 0.01 },
+      {
+        key: 'tolerancePct',
+        label: 'Tolerance %',
+        type: 'number',
+        default: 0.15,
+        min: 0.01,
+        max: 2,
+        step: 0.01,
+      },
       { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
       { key: 'maxWait', label: 'Max wait (bars)', type: 'number', default: 25, min: 3, max: 100 },
       { key: 'rr', label: 'Risk:Reward', type: 'number', default: 3, min: 1, max: 10, step: 0.5 },
@@ -592,7 +661,15 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     group: 'structure',
     pane: 'main',
     params: [
-      { key: 'impulseMult', label: 'Impulse x ATR', type: 'number', default: 1.2, min: 0.2, max: 5, step: 0.1 },
+      {
+        key: 'impulseMult',
+        label: 'Impulse x ATR',
+        type: 'number',
+        default: 1.2,
+        min: 0.2,
+        max: 5,
+        step: 0.1,
+      },
     ],
     plots: {},
     compute: (c, p) => ({ plots: {}, zones: orderBlocks(c, 14, num(p, 'impulseMult', 1.2)) }),
@@ -602,7 +679,17 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Fair Value Gaps',
     group: 'structure',
     pane: 'main',
-    params: [{ key: 'minGapPct', label: 'Min gap %', type: 'number', default: 0.05, min: 0.01, max: 1, step: 0.01 }],
+    params: [
+      {
+        key: 'minGapPct',
+        label: 'Min gap %',
+        type: 'number',
+        default: 0.05,
+        min: 0.01,
+        max: 1,
+        step: 0.01,
+      },
+    ],
     plots: {},
     compute: (c, p) => ({ plots: {}, zones: fairValueGaps(c, num(p, 'minGapPct', 0.05)) }),
   },
@@ -611,7 +698,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Market structure (HH/HL/BOS/CHoCH)',
     group: 'structure',
     pane: 'main',
-    params: [{ key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 }],
+    params: [
+      { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
+    ],
     plots: {},
     compute: (c, p) => {
       const r = marketStructure(c, num(p, 'strength', 3));
@@ -623,7 +712,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Auto trendlines',
     group: 'structure',
     pane: 'main',
-    params: [{ key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 }],
+    params: [
+      { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
+    ],
     plots: {},
     compute: (c, p) => ({ plots: {}, lines: trendlines(c, num(p, 'strength', 3)) }),
   },
@@ -632,7 +723,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Auto channel (zigzag gated)',
     group: 'structure',
     pane: 'main',
-    params: [{ key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 }],
+    params: [
+      { key: 'strength', label: 'Pivot strength', type: 'number', default: 3, min: 1, max: 10 },
+    ],
     plots: {},
     compute: (c, p) => {
       const r = channel(c, num(p, 'strength', 3));
@@ -654,7 +747,9 @@ export const DEFINITIONS: IndicatorDefinition[] = [
     name: 'Auto Fibonacci levels',
     group: 'structure',
     pane: 'main',
-    params: [{ key: 'lookback', label: 'Lookback bars', type: 'number', default: 150, min: 30, max: 1000 }],
+    params: [
+      { key: 'lookback', label: 'Lookback bars', type: 'number', default: 150, min: 30, max: 1000 },
+    ],
     plots: {},
     compute: (c, p) => ({
       plots: {},

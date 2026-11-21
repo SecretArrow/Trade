@@ -30,7 +30,15 @@ describe('indicator definitions registry', () => {
   it('has unique types and valid groups', () => {
     const types = DEFINITIONS.map((d) => d.type);
     expect(new Set(types).size).toBe(types.length);
-    const validGroups = new Set(['ma', 'bands', 'oscillators', 'trend', 'volume', 'structure', 'patterns']);
+    const validGroups = new Set([
+      'ma',
+      'bands',
+      'oscillators',
+      'trend',
+      'volume',
+      'structure',
+      'patterns',
+    ]);
     expect(DEFINITIONS.every((d) => validGroups.has(d.group))).toBe(true);
   });
 
@@ -103,10 +111,26 @@ const REQUIRED_CONCEPTS: { id: string; implementedAs: string[] }[] = [
   { id: 'divergence', implementedAs: ['divergence'] },
   { id: 'vwap', implementedAs: ['vwap'] },
   { id: 'pivot-points', implementedAs: ['pivot-points'] },
-  { id: 'ma-family', implementedAs: ['sma', 'ema', 'wma', 'vwma', 'hma', 'dema', 'tema', 'ma-ribbon'] },
+  {
+    id: 'ma-family',
+    implementedAs: ['sma', 'ema', 'wma', 'vwma', 'hma', 'dema', 'tema', 'ma-ribbon'],
+  },
   { id: 'ma-confluence', implementedAs: ['ma-confluence'] },
   { id: 'bands', implementedAs: ['bollinger', 'keltner', 'donchian', 'envelope', 'stddev'] },
-  { id: 'oscillators', implementedAs: ['rsi', 'stochastic', 'stoch-rsi', 'macd', 'cci', 'williams-r', 'roc', 'momentum', 'ao'] },
+  {
+    id: 'oscillators',
+    implementedAs: [
+      'rsi',
+      'stochastic',
+      'stoch-rsi',
+      'macd',
+      'cci',
+      'williams-r',
+      'roc',
+      'momentum',
+      'ao',
+    ],
+  },
   { id: 'volume-suite', implementedAs: ['volume', 'obv', 'mfi', 'ad', 'cmf'] },
   { id: 'ichimoku', implementedAs: ['ichimoku'] },
   { id: 'psar', implementedAs: ['psar'] },

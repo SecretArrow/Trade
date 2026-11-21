@@ -38,16 +38,38 @@ export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): Cha
     const p = candles[i - 1];
     const pp = candles[i - 2];
 
-    if (enabled.has('bullish-engulfing') && !isBull(p) && isBull(c) && c.close > p.open && c.open < p.close) {
+    if (
+      enabled.has('bullish-engulfing') &&
+      !isBull(p) &&
+      isBull(c) &&
+      c.close > p.open &&
+      c.open < p.close
+    ) {
       out.push(m(c, 'belowBar', '#26a69a', 'arrowUp', 'Engulf'));
     }
-    if (enabled.has('bearish-engulfing') && isBull(p) && !isBull(c) && c.close < p.open && c.open > p.close) {
+    if (
+      enabled.has('bearish-engulfing') &&
+      isBull(p) &&
+      !isBull(c) &&
+      c.close < p.open &&
+      c.open > p.close
+    ) {
       out.push(m(c, 'aboveBar', '#ef5350', 'arrowDown', 'Engulf'));
     }
-    if (enabled.has('hammer') && range(c) > 0 && lowerWick(c) > range(c) * 0.55 && upperWick(c) < range(c) * 0.2) {
+    if (
+      enabled.has('hammer') &&
+      range(c) > 0 &&
+      lowerWick(c) > range(c) * 0.55 &&
+      upperWick(c) < range(c) * 0.2
+    ) {
       out.push(m(c, 'belowBar', '#26a69a', 'arrowUp', 'Hammer'));
     }
-    if (enabled.has('shooting-star') && range(c) > 0 && upperWick(c) > range(c) * 0.55 && lowerWick(c) < range(c) * 0.2) {
+    if (
+      enabled.has('shooting-star') &&
+      range(c) > 0 &&
+      upperWick(c) > range(c) * 0.55 &&
+      lowerWick(c) < range(c) * 0.2
+    ) {
       out.push(m(c, 'aboveBar', '#ef5350', 'arrowDown', 'Star'));
     }
     if (enabled.has('doji') && range(c) > 0 && bodySize(c) <= range(c) * 0.1) {

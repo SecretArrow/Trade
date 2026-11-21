@@ -17,7 +17,15 @@ export interface ZoneOut {
   toTime: number;
   top: number;
   bottom: number;
-  kind: 'supply' | 'demand' | 'resistance' | 'support' | 'fvg-bull' | 'fvg-bear' | 'order-block-bull' | 'order-block-bear';
+  kind:
+    | 'supply'
+    | 'demand'
+    | 'resistance'
+    | 'support'
+    | 'fvg-bull'
+    | 'fvg-bear'
+    | 'order-block-bull'
+    | 'order-block-bear';
   label?: string;
   strength?: number;
   state?: 'candidate' | 'validated' | 'invalidated' | 'mitigated';

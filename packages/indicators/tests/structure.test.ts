@@ -204,7 +204,8 @@ describe('fibonacci auto levels', () => {
   it('includes golden ratio levels between swing extremes', () => {
     const candles: Candle[] = [];
     for (let i = 0; i < 30; i++) candles.push(candle(T0 + i * 3600, 99 + i * 0.2, 100 + i * 0.2));
-    for (let i = 0; i < 20; i++) candles.push(candle(T0 + (30 + i) * 3600, 106 - i * 0.2, 105 - i * 0.2));
+    for (let i = 0; i < 20; i++)
+      candles.push(candle(T0 + (30 + i) * 3600, 106 - i * 0.2, 105 - i * 0.2));
     const levels = fibonacciAuto(candles, 100);
     expect(levels).toHaveLength(9);
     expect(levels.some((l) => l.golden)).toBe(true);

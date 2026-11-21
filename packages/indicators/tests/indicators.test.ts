@@ -1,15 +1,27 @@
 import { describe, expect, it } from 'vitest';
 import { mulberry32, type Candle } from '@trade/core';
-import {
-  bollingerBands,
-  donchianChannel,
-  keltnerChannel,
-  stdDevIndicator,
-} from '../src/bands';
+import { bollingerBands, donchianChannel, keltnerChannel, stdDevIndicator } from '../src/bands';
 import { dema, ema, envelope, hma, maRibbon, sma, tema, vwma, wma } from '../src/movingAverages';
-import { awesomeOscillator, cci, macd, momentum, roc, rsi, stochastic, stochRsi, williamsR } from '../src/momentum';
+import {
+  awesomeOscillator,
+  cci,
+  macd,
+  momentum,
+  roc,
+  rsi,
+  stochastic,
+  stochRsi,
+  williamsR,
+} from '../src/momentum';
 import { adx, ichimoku, psar, supertrend } from '../src/trend';
-import { accumulationDistribution, chaikinMoneyFlow, mfi, obv, volumeWithMa, vwap } from '../src/volume';
+import {
+  accumulationDistribution,
+  chaikinMoneyFlow,
+  mfi,
+  obv,
+  volumeWithMa,
+  vwap,
+} from '../src/volume';
 
 const seed = mulberry32(20260101);
 function makeCandles(count: number, base = 100, vol = 0.02): Candle[] {
@@ -44,8 +56,7 @@ describe('moving averages', () => {
     const out = sma(candles, 10);
     assertAligned(out);
     for (let i = 0; i < 9; i++) expect(out[i]).toBeNull();
-    const expected =
-      candles.slice(0, 10).reduce((s, c) => s + c.close, 0) / 10;
+    const expected = candles.slice(0, 10).reduce((s, c) => s + c.close, 0) / 10;
     expect(out[9]).toBeCloseTo(expected, 8);
   });
 
@@ -57,7 +68,13 @@ describe('moving averages', () => {
   });
 
   it('computes WMA, VWMA, HMA, DEMA, TEMA with aligned lengths', () => {
-    for (const out of [wma(candles, 10), vwma(candles, 10), hma(candles, 20), dema(candles, 10), tema(candles, 10)]) {
+    for (const out of [
+      wma(candles, 10),
+      vwma(candles, 10),
+      hma(candles, 20),
+      dema(candles, 10),
+      tema(candles, 10),
+    ]) {
       assertAligned(out);
       expect(out.some((v) => v !== null)).toBe(true);
     }
@@ -134,7 +151,13 @@ describe('oscillators', () => {
   });
 
   it('computes CCI, Williams %R, ROC, momentum, AO', () => {
-    for (const out of [cci(candles, 20), williamsR(candles, 14), roc(candles, 9), momentum(candles, 10), awesomeOscillator(candles)]) {
+    for (const out of [
+      cci(candles, 20),
+      williamsR(candles, 14),
+      roc(candles, 9),
+      momentum(candles, 10),
+      awesomeOscillator(candles),
+    ]) {
       assertAligned(out);
       expect(out.some((v) => v !== null)).toBe(true);
     }

@@ -49,7 +49,7 @@ export function supportResistance(candles: Candle[], options: SrOptions = {}): S
     const last = clusters[clusters.length - 1];
     if (last) {
       const ref = last[0].price;
-      if (Math.abs(p.price - ref) / ref * 100 <= clusterPct) {
+      if ((Math.abs(p.price - ref) / ref) * 100 <= clusterPct) {
         last.push(p);
         continue;
       }
@@ -83,7 +83,8 @@ export function supportResistance(candles: Candle[], options: SrOptions = {}): S
       const c = candles[i];
       const cTop = bodyTop(c);
       const cBottom = bodyBottom(c);
-      const nowSide: 'above' | 'below' = cBottom > top ? 'above' : cTop < bottom ? 'below' : 'inside';
+      const nowSide: 'above' | 'below' =
+        cBottom > top ? 'above' : cTop < bottom ? 'below' : 'inside';
       if (nowSide === 'inside') {
         if (side === 'above' || side === 'below') {
           // re-entering the zone from one side: a wick test or body test
@@ -98,7 +99,8 @@ export function supportResistance(candles: Candle[], options: SrOptions = {}): S
       }
     }
 
-    const strength = touches + wickTests * 0.5 - crossings * 1.5 + recencyBoost(cluster, candles.length);
+    const strength =
+      touches + wickTests * 0.5 - crossings * 1.5 + recencyBoost(cluster, candles.length);
     const state: SrZone['state'] =
       crossings >= 3 ? 'invalidated' : crossings >= 1 ? 'validated' : 'candidate';
     zones.push({
@@ -207,12 +209,24 @@ export function marketStructure(candles: Candle[], swingPeriod = 3): MarketStruc
     const c = candles[i];
     if (lastHigh && c.close > lastHigh.price && i > lastHigh.index) {
       const kind = trend === 'up' ? 'BOS' : 'CHoCH';
-      markers.push({ time: c.time, position: 'aboveBar', color: '#4f8cff', shape: 'arrowUp', text: kind });
+      markers.push({
+        time: c.time,
+        position: 'aboveBar',
+        color: '#4f8cff',
+        shape: 'arrowUp',
+        text: kind,
+      });
       trend = 'up';
       lastHigh = null;
     } else if (lastLow && c.close < lastLow.price && i > lastLow.index) {
       const kind = trend === 'down' ? 'BOS' : 'CHoCH';
-      markers.push({ time: c.time, position: 'belowBar', color: '#b46cff', shape: 'arrowDown', text: kind });
+      markers.push({
+        time: c.time,
+        position: 'belowBar',
+        color: '#b46cff',
+        shape: 'arrowDown',
+        text: kind,
+      });
       trend = 'down';
       lastLow = null;
     }
@@ -247,8 +261,22 @@ export function channel(candles: Candle[], swingPeriod = 3): ChannelResult {
     if (p3.price < p1.price) {
       const slope = (p3.price - p1.price) / (p3.time - p1.time || 1);
       const endTime = candles[candles.length - 1].time + (p3.time - p1.time) / 4;
-      const upper: LineOut = { x1: p1.time, y1: p1.price, x2: endTime, y2: p1.price + slope * (endTime - p1.time), kind: 'channel-upper', label: 'Channel upper' };
-      const lower: LineOut = { x1: p2.time, y1: p2.price, x2: endTime, y2: p2.price + slope * (endTime - p2.time), kind: 'channel-lower', label: 'Channel lower' };
+      const upper: LineOut = {
+        x1: p1.time,
+        y1: p1.price,
+        x2: endTime,
+        y2: p1.price + slope * (endTime - p1.time),
+        kind: 'channel-upper',
+        label: 'Channel upper',
+      };
+      const lower: LineOut = {
+        x1: p2.time,
+        y1: p2.price,
+        x2: endTime,
+        y2: p2.price + slope * (endTime - p2.time),
+        kind: 'channel-lower',
+        label: 'Channel lower',
+      };
       const midY = (y1: number, y2: number) => (y1 + y2) / 2;
       const mid: LineOut = {
         x1: p2.time,
@@ -271,8 +299,22 @@ export function channel(candles: Candle[], swingPeriod = 3): ChannelResult {
     if (p3.price > p1.price) {
       const slope = (p3.price - p1.price) / (p3.time - p1.time || 1);
       const endTime = candles[candles.length - 1].time + (p3.time - p1.time) / 4;
-      const lower: LineOut = { x1: p1.time, y1: p1.price, x2: endTime, y2: p1.price + slope * (endTime - p1.time), kind: 'channel-lower', label: 'Channel lower' };
-      const upper: LineOut = { x1: p2.time, y1: p2.price, x2: endTime, y2: p2.price + slope * (endTime - p2.time), kind: 'channel-upper', label: 'Channel upper' };
+      const lower: LineOut = {
+        x1: p1.time,
+        y1: p1.price,
+        x2: endTime,
+        y2: p1.price + slope * (endTime - p1.time),
+        kind: 'channel-lower',
+        label: 'Channel lower',
+      };
+      const upper: LineOut = {
+        x1: p2.time,
+        y1: p2.price,
+        x2: endTime,
+        y2: p2.price + slope * (endTime - p2.time),
+        kind: 'channel-upper',
+        label: 'Channel upper',
+      };
       const mid: LineOut = {
         x1: p2.time,
         y1: (p1.price + p2.price) / 2,
@@ -372,7 +414,7 @@ export function fairValueGaps(candles: Candle[], minGapPct = 0.05, maxZones = 8)
     const bullGap = c2.low - c0.high;
     const bearGap = c0.low - c2.high;
     const price = c2.close;
-    if (bullGap / price * 100 >= minGapPct) {
+    if ((bullGap / price) * 100 >= minGapPct) {
       let filled = false;
       for (let j = i + 1; j < candles.length && !filled; j++) {
         if (candles[j].low <= c0.high) filled = true;
@@ -386,7 +428,7 @@ export function fairValueGaps(candles: Candle[], minGapPct = 0.05, maxZones = 8)
         label: `FVG${filled ? ' (filled)' : ''}`,
         state: filled ? 'mitigated' : 'candidate',
       });
-    } else if (bearGap / price * 100 >= minGapPct) {
+    } else if ((bearGap / price) * 100 >= minGapPct) {
       let filled = false;
       for (let j = i + 1; j < candles.length && !filled; j++) {
         if (candles[j].high >= c0.low) filled = true;
@@ -409,7 +451,12 @@ export function fairValueGaps(candles: Candle[], minGapPct = 0.05, maxZones = 8)
 // Order blocks
 // ---------------------------------------------------------------------------
 
-export function orderBlocks(candles: Candle[], atrPeriod = 14, impulseMult = 1.2, maxZones = 6): ZoneOut[] {
+export function orderBlocks(
+  candles: Candle[],
+  atrPeriod = 14,
+  impulseMult = 1.2,
+  maxZones = 6,
+): ZoneOut[] {
   const atr = atrValues(candles, atrPeriod);
   const out: ZoneOut[] = [];
   for (let i = 0; i + 4 <= candles.length - 1; i++) {
@@ -529,7 +576,14 @@ export function divergence(candles: Candle[], options: DivergenceOptions = {}): 
       const ob = osc[b.index];
       if (oa === null || ob === null) continue;
       if (b.price > a.price && ob < oa) {
-        out.push({ time: b.time, position: 'aboveBar', color: '#ef5350', shape: 'arrowDown', text: `Bear div`, kind: 'regular-bear' });
+        out.push({
+          time: b.time,
+          position: 'aboveBar',
+          color: '#ef5350',
+          shape: 'arrowDown',
+          text: `Bear div`,
+          kind: 'regular-bear',
+        });
       }
     }
     // regular bullish: lower low in price, higher low in osc
@@ -540,7 +594,14 @@ export function divergence(candles: Candle[], options: DivergenceOptions = {}): 
       const ob = osc[b.index];
       if (oa === null || ob === null) continue;
       if (b.price < a.price && ob > oa) {
-        out.push({ time: b.time, position: 'belowBar', color: '#26a69a', shape: 'arrowUp', text: `Bull div`, kind: 'regular-bull' });
+        out.push({
+          time: b.time,
+          position: 'belowBar',
+          color: '#26a69a',
+          shape: 'arrowUp',
+          text: `Bull div`,
+          kind: 'regular-bull',
+        });
       }
     }
   }
@@ -553,7 +614,14 @@ export function divergence(candles: Candle[], options: DivergenceOptions = {}): 
       const ob = osc[b.index];
       if (oa === null || ob === null) continue;
       if (b.price < a.price && ob > oa) {
-        out.push({ time: b.time, position: 'aboveBar', color: '#f0a92e', shape: 'arrowDown', text: 'Hidden bear div', kind: 'hidden-bear' });
+        out.push({
+          time: b.time,
+          position: 'aboveBar',
+          color: '#f0a92e',
+          shape: 'arrowDown',
+          text: 'Hidden bear div',
+          kind: 'hidden-bear',
+        });
       }
     }
     // hidden bullish: higher low in price, lower low in osc
@@ -564,7 +632,14 @@ export function divergence(candles: Candle[], options: DivergenceOptions = {}): 
       const ob = osc[b.index];
       if (oa === null || ob === null) continue;
       if (b.price > a.price && ob < oa) {
-        out.push({ time: b.time, position: 'belowBar', color: '#f0a92e', shape: 'arrowUp', text: 'Hidden bull div', kind: 'hidden-bull' });
+        out.push({
+          time: b.time,
+          position: 'belowBar',
+          color: '#f0a92e',
+          shape: 'arrowUp',
+          text: 'Hidden bull div',
+          kind: 'hidden-bull',
+        });
       }
     }
   }

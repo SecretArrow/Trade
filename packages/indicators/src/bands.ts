@@ -1,7 +1,15 @@
 import type { Candle } from '@trade/core';
 import type { PlotValues, SourceKey } from './types';
 import { ema } from './movingAverages';
-import { highestSeries, lowestSeries, rmaValues, smaValues, sourceSeries, stdevSeries, trueRanges } from './util';
+import {
+  highestSeries,
+  lowestSeries,
+  rmaValues,
+  smaValues,
+  sourceSeries,
+  stdevSeries,
+  trueRanges,
+} from './util';
 
 export interface BandResult {
   upper: PlotValues;
@@ -20,8 +28,12 @@ export function bollingerBands(
   const sd = stdevSeries(values, period);
   return {
     middle,
-    upper: middle.map((m, i) => (m === null || sd[i] === null ? null : m + stdDevMult * (sd[i] as number))),
-    lower: middle.map((m, i) => (m === null || sd[i] === null ? null : m - stdDevMult * (sd[i] as number))),
+    upper: middle.map((m, i) =>
+      m === null || sd[i] === null ? null : m + stdDevMult * (sd[i] as number),
+    ),
+    lower: middle.map((m, i) =>
+      m === null || sd[i] === null ? null : m - stdDevMult * (sd[i] as number),
+    ),
   };
 }
 
@@ -35,8 +47,12 @@ export function keltnerChannel(
   const atrVals = atrValues(candles, atrPeriod);
   return {
     middle,
-    upper: middle.map((m, i) => (m === null || atrVals[i] === null ? null : m + atrMult * (atrVals[i] as number))),
-    lower: middle.map((m, i) => (m === null || atrVals[i] === null ? null : m - atrMult * (atrVals[i] as number))),
+    upper: middle.map((m, i) =>
+      m === null || atrVals[i] === null ? null : m + atrMult * (atrVals[i] as number),
+    ),
+    lower: middle.map((m, i) =>
+      m === null || atrVals[i] === null ? null : m - atrMult * (atrVals[i] as number),
+    ),
   };
 }
 

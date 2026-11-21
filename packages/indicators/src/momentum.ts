@@ -28,7 +28,12 @@ export interface StochResult {
   d: PlotValues;
 }
 
-export function stochastic(candles: Candle[], kPeriod: number, dPeriod: number, smooth: number): StochResult {
+export function stochastic(
+  candles: Candle[],
+  kPeriod: number,
+  dPeriod: number,
+  smooth: number,
+): StochResult {
   const highs = candles.map((c) => c.high);
   const lows = candles.map((c) => c.low);
   const closes = candles.map((c) => c.close);
@@ -41,8 +46,14 @@ export function stochastic(candles: Candle[], kPeriod: number, dPeriod: number, 
     if (h === l) return 50;
     return ((c - l) / (h - l)) * 100;
   });
-  const k = smaValues(raw.map((x) => x ?? 0), smooth).map((x, i) => (raw[i] === null ? null : x));
-  const d = smaValues(k.map((x) => x ?? 0), dPeriod).map((x, i) => (k[i] === null ? null : x));
+  const k = smaValues(
+    raw.map((x) => x ?? 0),
+    smooth,
+  ).map((x, i) => (raw[i] === null ? null : x));
+  const d = smaValues(
+    k.map((x) => x ?? 0),
+    dPeriod,
+  ).map((x, i) => (k[i] === null ? null : x));
   return { k, d };
 }
 
@@ -64,8 +75,14 @@ export function stochRsi(
     if (h === l) return 50;
     return ((r - l) / (h - l)) * 100;
   });
-  const k = smaValues(raw.map((x) => x ?? 0), kPeriod).map((x, i) => (raw[i] === null ? null : x));
-  const d = smaValues(k.map((x) => x ?? 0), dPeriod).map((x, i) => (k[i] === null ? null : x));
+  const k = smaValues(
+    raw.map((x) => x ?? 0),
+    kPeriod,
+  ).map((x, i) => (raw[i] === null ? null : x));
+  const d = smaValues(
+    k.map((x) => x ?? 0),
+    dPeriod,
+  ).map((x, i) => (k[i] === null ? null : x));
   return { k, d };
 }
 
@@ -136,8 +153,14 @@ export function cci(candles: Candle[], period: number): PlotValues {
 
 /** Williams %R. */
 export function williamsR(candles: Candle[], period: number): PlotValues {
-  const hh = highestSeries(candles.map((c) => c.high), period);
-  const ll = lowestSeries(candles.map((c) => c.low), period);
+  const hh = highestSeries(
+    candles.map((c) => c.high),
+    period,
+  );
+  const ll = lowestSeries(
+    candles.map((c) => c.low),
+    period,
+  );
   return closes(candles).map((c, i) => {
     const h = hh[i];
     const l = ll[i];
@@ -159,7 +182,11 @@ export function roc(candles: Candle[], period: number, source: SourceKey = 'clos
 }
 
 /** Raw momentum (difference over `period` candles). */
-export function momentum(candles: Candle[], period: number, source: SourceKey = 'close'): PlotValues {
+export function momentum(
+  candles: Candle[],
+  period: number,
+  source: SourceKey = 'close',
+): PlotValues {
   const values = sourceSeries(candles, source);
   return values.map((v, i) => (i < period ? null : v - values[i - period]));
 }

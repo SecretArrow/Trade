@@ -66,7 +66,10 @@ function isBearishPinBar(c: Candle): boolean {
  * 4. Suggestions are informational: entry at the zone edge, stop beyond the
  *    far edge, target at `rr` times the risk.
  */
-export function breakRetest(candles: Candle[], options: BreakRetestOptions = {}): BreakRetestResult {
+export function breakRetest(
+  candles: Candle[],
+  options: BreakRetestOptions = {},
+): BreakRetestResult {
   const tolerancePct = options.tolerancePct ?? 0.15;
   const left = options.left ?? 3;
   const right = options.right ?? 3;
@@ -231,7 +234,12 @@ export function breakRetest(candles: Candle[], options: BreakRetestOptions = {})
 
   // suggest levels for the most recent actionable event
   const latest = events[events.length - 1];
-  if (latest && latest.entry !== undefined && latest.stop !== undefined && latest.target !== undefined) {
+  if (
+    latest &&
+    latest.entry !== undefined &&
+    latest.stop !== undefined &&
+    latest.target !== undefined
+  ) {
     levels.push(
       { price: latest.entry, label: 'Entry (info)', kind: 'entry' },
       { price: latest.stop, label: 'Stop (info)', kind: 'stop' },

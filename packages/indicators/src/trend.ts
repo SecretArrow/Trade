@@ -80,7 +80,13 @@ export function psar(candles: Candle[], afStep: number, afMax: number): PsarResu
       }
       if (c.low < sar) {
         // flip to downtrend
-        markers.push({ time: c.time, position: 'aboveBar', color: '#ef5350', shape: 'arrowDown', text: 'SAR flip' });
+        markers.push({
+          time: c.time,
+          position: 'aboveBar',
+          color: '#ef5350',
+          shape: 'arrowDown',
+          text: 'SAR flip',
+        });
         up = false;
         sar = ep;
         ep = c.low;
@@ -93,7 +99,13 @@ export function psar(candles: Candle[], afStep: number, afMax: number): PsarResu
         af = Math.min(afMax, af + afStep);
       }
       if (c.high > sar) {
-        markers.push({ time: c.time, position: 'belowBar', color: '#26a69a', shape: 'arrowUp', text: 'SAR flip' });
+        markers.push({
+          time: c.time,
+          position: 'belowBar',
+          color: '#26a69a',
+          shape: 'arrowUp',
+          text: 'SAR flip',
+        });
         up = true;
         sar = ep;
         ep = c.high;
