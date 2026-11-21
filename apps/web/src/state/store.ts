@@ -14,6 +14,7 @@ import { SYMBOLS } from '@trade/core';
 import type { Drawing } from '@trade/drawings';
 import { nextZIndex } from '@trade/drawings';
 import type { IndicatorParams } from '@trade/indicators';
+import type { BiasDirection, MtfStepKey, TradeMode } from '../strategy/mtf';
 
 export interface IndicatorInstance {
   id: string;
@@ -75,6 +76,9 @@ interface AppState {
     sound: boolean;
     accountSize: number;
     riskPct: number;
+    tradeMode: TradeMode;
+    mtfBias: BiasDirection;
+    mtfSteps: Record<MtfStepKey, boolean>;
   };
 
   // ephemeral
@@ -120,6 +124,10 @@ interface AppState {
   toggleAlert(id: string): void;
   markAlertTriggered(id: string): void;
   updateSettings(patch: Partial<AppState['settings']>): void;
+  setTradeMode(mode: TradeMode): void;
+  setMtfBias(bias: BiasDirection): void;
+  toggleMtfStep(key: MtfStepKey): void;
+  resetMtfChecklist(): void;
   setStatus(status: ConnectionStatus, price?: number): void;
   setCrosscheck(
     deviation: number | null,
@@ -134,7 +142,20 @@ interface AppState {
   importState(data: unknown): void;
 }
 
-const SCHEMA_VERSION = 3;
+const SCHEMA_VERSION = 4;
+
+function defaultMtfSteps(): Record<MtfStepKey, boolean> {
+  return {
+    mode: false,
+    'major-bias': false,
+    'price-in-major-zone': false,
+    'confirm-evidence': false,
+    'entry-snd': false,
+    nesting: false,
+    'sl-outside-zone': false,
+    'tp-capped': false,
+  };
+}
 
 function defaultPanes(): PaneState[] {
   return [
@@ -179,7 +200,15 @@ export const useStore = create<AppState>()(
         indicatorTemplates: [],
         drawings: [],
         alerts: [],
-        settings: { notifications: true, sound: true, accountSize: 10000, riskPct: 1 },
+        settings: {
+          notifications: true,
+          sound: true,
+          accountSize: 10000,
+          riskPct: 1,
+          tradeMode: 'off',
+          mtfBias: 'none',
+          mtfSteps: defaultMtfSteps(),
+        },
         activeTool: null,
         selectedDrawingId: null,
         status: 'loading',
@@ -321,6 +350,32 @@ export const useStore = create<AppState>()(
           }),
 
         updateSettings: (patch) => set({ settings: { ...get().settings, ...patch } }),
+        setTradeMode: (mode) =>
+          set({
+            settings: {
+              ...get().settings,
+              tradeMode: mode,
+              mtfSteps: mode === 'off' ? defaultMtfSteps() : { ...get().settings.mtfSteps, mode: true },
+            },
+          }),
+        setMtfBias: (bias) => {
+          const steps = { ...get().settings.mtfSteps, 'major-bias': bias !== 'none' };
+          set({ settings: { ...get().settings, mtfBias: bias, mtfSteps: steps } });
+        },
+        toggleMtfStep: (key) => {
+          const steps = { ...get().settings.mtfSteps, [key]: !get().settings.mtfSteps[key] };
+          set({ settings: { ...get().settings, mtfSteps: steps } });
+        },
+        resetMtfChecklist: () =>
+          set({
+            settings: {
+              ...get().settings,
+              mtfSteps:
+                get().settings.tradeMode === 'off'
+                  ? defaultMtfSteps()
+                  : { ...defaultMtfSteps(), mode: true },
+            },
+          }),
         setStatus: (status, price) =>
           set({
             status,
@@ -369,6 +424,20 @@ export const useStore = create<AppState>()(
           }
           if (!Array.isArray(patch.panes) || patch.panes.length === 0) delete patch.panes;
           if (!Array.isArray(patch.drawings)) delete patch.drawings;
+          // Merge imported settings over current settings so new fields
+          // (tradeMode/mtfBias/mtfSteps) keep their defaults when absent.
+          if (patch.settings) {
+            const current = get().settings;
+            const incomingSettings = patch.settings as Partial<typeof current>;
+            patch.settings = {
+              ...current,
+              ...incomingSettings,
+              mtfSteps: {
+                ...current.mtfSteps,
+                ...(incomingSettings.mtfSteps ?? {}),
+              },
+            };
+          }
           set(patch);
         },
       };
@@ -402,6 +471,24 @@ export const useStore = create<AppState>()(
           if (!Array.isArray(state.indicators)) state.indicators = [];
           if (!Array.isArray(state.drawings)) state.drawings = [];
           if (!Array.isArray(state.alerts)) state.alerts = [];
+          if (typeof state.settings !== 'object' || state.settings === null) {
+            state.settings = {};
+          }
+          const s = state.settings as Record<string, unknown>;
+          if (s.tradeMode === undefined) s.tradeMode = 'off';
+          if (s.mtfBias === undefined) s.mtfBias = 'none';
+          if (typeof s.mtfSteps !== 'object' || s.mtfSteps === null) {
+            s.mtfSteps = {
+              mode: false,
+              'major-bias': false,
+              'price-in-major-zone': false,
+              'confirm-evidence': false,
+              'entry-snd': false,
+              nesting: false,
+              'sl-outside-zone': false,
+              'tp-capped': false,
+            };
+          }
         }
         return state as unknown as AppState;
       },

@@ -4,6 +4,8 @@ import { useStore } from '../state/store';
 import { translate } from '../i18n';
 import { requestNotificationPermission } from '../alerts/engine';
 import { Field, Modal } from './primitives';
+import { TRADE_MODES, TRADE_MODE_ORDER } from '../strategy/mtf';
+import type { TradeMode } from '../strategy/mtf';
 
 export function SettingsDialog(props: { onClose: () => void }) {
   const locale = useStore((s) => s.locale);
@@ -51,6 +53,40 @@ export function SettingsDialog(props: { onClose: () => void }) {
 
   return (
     <Modal title={t('settings')} onClose={props.onClose}>
+      <Field label={t('trade_mode')}>
+        <div className="trade-mode-grid">
+          <button
+            type="button"
+            className={`trade-mode-card${settings.tradeMode === 'off' ? ' active' : ''}`}
+            onClick={() => useStore.getState().setTradeMode('off')}
+          >
+            <span className="trade-mode-name">{t('trade_mode_off')}</span>
+            <span className="trade-mode-desc">{t('trade_mode_off_desc')}</span>
+          </button>
+          {TRADE_MODE_ORDER.map((m) => {
+            const c = TRADE_MODES[m];
+            return (
+              <button
+                key={m}
+                type="button"
+                className={`trade-mode-card${settings.tradeMode === m ? ' active' : ''}`}
+                onClick={() => useStore.getState().setTradeMode(m as TradeMode)}
+              >
+                <span className="trade-mode-name">{t(`trade_mode_${m}`)}</span>
+                <span className="trade-mode-cascade">
+                  {c.major} → {c.confirm} → {c.trading}
+                </span>
+                <span className="trade-mode-desc">{t(`trade_mode_${m}_desc`)}</span>
+              </button>
+            );
+          })}
+        </div>
+      </Field>
+      <p className="dim small">
+        {locale === 'id'
+          ? 'Aktifkan juga tab "Strategi" di sidebar kanan untuk checklist & deteksi zona SND bertumpuk.'
+          : 'Also open the "Strategy" tab in the right sidebar for the checklist and nested-SND detection.'}
+      </p>
       <Field label={t('api_key')}>
         <input
           type="password"

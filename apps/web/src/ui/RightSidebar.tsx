@@ -6,8 +6,9 @@ import { getDefinition } from '@trade/indicators';
 import { describeDrawing } from '@trade/drawings';
 import { useStore } from '../state/store';
 import { translate } from '../i18n';
+import { MtfPanel } from './MtfPanel';
 
-type Tab = 'watchlist' | 'indicators' | 'objects' | 'templates';
+type Tab = 'watchlist' | 'indicators' | 'objects' | 'templates' | 'strategy';
 
 export function RightSidebar(props: { initialTab?: Tab }) {
   const locale = useStore((s) => s.locale);
@@ -59,6 +60,7 @@ export function RightSidebar(props: { initialTab?: Tab }) {
     { id: 'watchlist', label: t('watchlist') },
     { id: 'indicators', label: t('indicators') },
     { id: 'objects', label: t('object_tree') },
+    { id: 'strategy', label: t('mtf_strategy') },
     { id: 'templates', label: t('templates') },
   ];
 
@@ -253,6 +255,8 @@ export function RightSidebar(props: { initialTab?: Tab }) {
             ))}
           </div>
         )}
+
+        {tab === 'strategy' && <MtfPanel />}
       </div>
     </aside>
   );

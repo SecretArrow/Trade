@@ -65,10 +65,35 @@ test.describe('charting app (demo data)', () => {
     const viewport = page.viewportSize();
     test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
     await page.goto('/?src=demo');
-    await page.locator('.tool-btn').first().click();
-    await expect(page.locator('.tool-btn.active')).toHaveCount(1);
-    await page.locator('.tool-btn').first().click();
-    await expect(page.locator('.tool-btn.active')).toHaveCount(0);
+    await page.locator('.tool-btn.primary').first().click();
+    await expect(page.locator('.tool-btn.primary.active')).toHaveCount(1);
+    await page.locator('.tool-btn.primary').first().click();
+    await expect(page.locator('.tool-btn.primary.active')).toHaveCount(0);
+  });
+
+  test('drawing flyout opens and lists related tools', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    await page.locator('.tool-btn.chevron').first().click();
+    await expect(page.locator('.tool-flyout-popup')).toBeVisible();
+    await expect(page.locator('.flyout-item').first()).toBeVisible();
+    // Selecting a flyout item closes the popup and activates the primary slot.
+    await page.locator('.flyout-item').nth(1).click();
+    await expect(page.locator('.tool-flyout-popup')).toHaveCount(0);
+    await expect(page.locator('.tool-btn.primary.active')).toHaveCount(1);
+  });
+
+  test('strategy tab opens MTF workflow panel', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    await page.getByRole('tab', { name: /Strategy|Strategi/ }).click();
+    await expect(page.locator('.mtf-panel')).toBeVisible();
+    // Activating Intraday locks the cascade and shows the 3-TF quick switcher.
+    await page.getByRole('button', { name: /Intraday/ }).click();
+    await expect(page.locator('.mtf-cascade-row')).toBeVisible();
+    await expect(page.locator('.mtf-tf-btn')).toHaveCount(3);
   });
 
   test('object tree is reachable and shows the empty state', async ({ page }) => {

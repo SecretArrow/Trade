@@ -229,6 +229,32 @@ const GLYPHS: Record<string, ReactElement> = {
       <path d="M10 11 V16.5 M14 11 V16.5" />
     </>
   ),
+  magnet: (
+    <>
+      <path d="M5 4 V11 A7 7 0 0 0 19 11 V4" />
+      <path d="M5 4 H9 V11 A3 3 0 0 0 15 11 V4 H19" />
+    </>
+  ),
+  'hide-all': (
+    <>
+      <path d="M3 12 C6 7 9 5 12 5 C15 5 18 7 21 12" />
+      <path d="M3 12 C6 17 9 19 12 19 C15 19 18 17 21 12" opacity={0.55} />
+      <path d="M4 4 L20 20" strokeDasharray="2.5 2" />
+    </>
+  ),
+  'show-all': (
+    <>
+      <path d="M3 12 C6 7 9 5 12 5 C15 5 18 7 21 12" />
+      <path d="M3 12 C6 17 9 19 12 19 C15 19 18 17 21 12" />
+      {dot(12, 12)}
+    </>
+  ),
+  'lock-all': (
+    <>
+      <rect x={5} y={10.5} width={14} height={9.5} rx={1.5} />
+      <path d="M8 10.5 V7 A4 4 0 0 1 16 7 V10.5" />
+    </>
+  ),
 };
 
 export function ToolIcon(props: { tool: string; size?: number }) {
