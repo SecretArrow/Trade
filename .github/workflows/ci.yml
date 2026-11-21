@@ -278,6 +278,8 @@ jobs:
     permissions:
       actions: read
     steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Write job timings
         env:
           GH_TOKEN: ${{ github.token }}
@@ -285,29 +287,4 @@ jobs:
           RUN_ID: ${{ github.run_id }}
         run: |
           gh api --slurp --paginate "repos/$REPO/actions/runs/$RUN_ID/jobs" > /tmp/jobs.json
-          {
-            echo '## CI job timings'
-            echo ''
-            echo '| Job | Result | Seconds |'
-            echo '|---|---|---|'
-            python3 - <<'PY'
-import json
-from datetime import datetime
-
-def ts(x):
-    return datetime.strptime(x, '%Y-%m-%dT%H:%M:%SZ')
-
-with open('/tmp/jobs.json') as f:
-    pages = json.load(f)
-rows = []
-for page in pages:
-    for job in page.get('jobs', []):
-        started = job.get('started_at')
-        completed = job.get('completed_at')
-        seconds = ''
-        if started and completed:
-            seconds = str(int((ts(completed) - ts(started)).total_seconds()))
-        result = job.get('conclusion') or job.get('status') or '?'
-        print(f'| {job["name"]} | {result} | {seconds} |')
-PY
-          } >> "$GITHUB_STEP_SUMMARY"
+          python3 scripts/ci-job-timings.py /tmp/jobs.json >> "$GITHUB_STEP_SUMMARY"
