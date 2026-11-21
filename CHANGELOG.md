@@ -8,6 +8,16 @@
 * **web,strategy:** TradingView-style drawing flyouts (5 groups, primary slot swaps to active tool, footer magnet/hide/show/lock toggles) and Bang RAN multi-timeframe trade workflow — Trade Mode selector (Swing 1W→4h→1h / Intraday 4h→30m→15m / Scalping 30m→5m→1m), Strategy tab with 3-TF quick switcher, bias toggle, pre-entry checklist and SND nesting detector.
 * **web:** replace drawing tool text labels with hand-crafted SVG icons for all 34 tools.
 
+## [1.1.0](https://github.com/SecretArrow/Trade/compare/v1.0.0...v1.1.0) (2026-11-21)
+
+
+### Features
+
+* **web,strategy:** TradingView-style drawing flyouts + Bang RAN MTF workflow ([2ec3fcd](https://github.com/SecretArrow/Trade/commit/2ec3fcd34baea063c41a20714509e9088b5fe61d))
+* **web:** drawing engine v2 - chart-native rendering + TradingView-style UX ([18794eb](https://github.com/SecretArrow/Trade/commit/18794ebd3b0f1023863ac7f31d0f41612a34ef81))
+* **web:** optional TradingView advanced-chart widget engine ([d624842](https://github.com/SecretArrow/Trade/commit/d624842bd496f95a545f599998b7c1d1db18cb42))
+* **web:** replace drawing tool text labels with hand-crafted SVG icons ([2ea7adb](https://github.com/SecretArrow/Trade/commit/2ea7adbbbedc6d86c1b902e4c59471ad252c4e15))
+
 ## 1.0.0 (2026-11-21)
 
 
