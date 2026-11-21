@@ -1,5 +1,13 @@
 # Changelog
 
+## Unreleased
+
+
+### Features
+
+* **web,strategy:** TradingView-style drawing flyouts (5 groups, primary slot swaps to active tool, footer magnet/hide/show/lock toggles) and Bang RAN multi-timeframe trade workflow — Trade Mode selector (Swing 1W→4h→1h / Intraday 4h→30m→15m / Scalping 30m→5m→1m), Strategy tab with 3-TF quick switcher, bias toggle, pre-entry checklist and SND nesting detector.
+* **web:** replace drawing tool text labels with hand-crafted SVG icons for all 34 tools.
+
 ## 1.0.0 (2026-11-21)
 
 
