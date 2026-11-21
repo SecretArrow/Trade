@@ -2,8 +2,8 @@ import { expect, test } from '@playwright/test';
 
 /**
  * Full app e2e coverage using the deterministic demo data source.
- * Covers: load, symbol switch, timeframe switch, chart type, provider
- * switch, add indicator, draw + persist, theme toggle.
+ * Covers: load, symbol switch, timeframe switch, chart type, chart engine,
+ * provider switch, add indicator, draw + persist, theme toggle.
  */
 test.describe('charting app (demo data)', () => {
   test('loads and renders a candle chart with toolbar', async ({ page }) => {
@@ -35,6 +35,19 @@ test.describe('charting app (demo data)', () => {
     await expect(page.locator('canvas').first()).toBeVisible();
     await page.getByLabel('Chart type').selectOption('area');
     await expect(page.locator('canvas').first()).toBeVisible();
+  });
+
+  test('switches chart engine to TradingView and back', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    const engine = page.locator('#chart-engine');
+    await engine.selectOption('tradingview');
+    // Assert only our own container div — the TradingView iframe needs
+    // internet and must not be waited for (CI runs offline).
+    await expect(page.locator('.tradingview-widget-container')).toBeVisible();
+    await engine.selectOption('native');
+    await expect(page.locator('canvas').first()).toBeVisible({ timeout: 20_000 });
   });
 
   test('switches the data source dropdown', async ({ page }) => {

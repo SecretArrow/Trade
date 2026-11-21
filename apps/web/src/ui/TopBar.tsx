@@ -4,6 +4,7 @@ import { TIMEFRAMES, formatPrice, getSymbol } from '@trade/core';
 import { DEFINITIONS } from '@trade/indicators';
 import { getProvider, providersForSymbol } from '@trade/providers';
 import { useStore } from '../state/store';
+import type { ChartEngine } from '../state/store';
 import { translate } from '../i18n';
 import { Modal } from './primitives';
 import { SymbolSearch } from './SymbolSearch';
@@ -137,6 +138,18 @@ export function TopBar() {
               {t(ct.labelKey)}
             </option>
           ))}
+        </select>
+        <select
+          id="chart-engine"
+          className="tb-select"
+          value={pane.engine ?? 'native'}
+          aria-label={t('chart_engine')}
+          onChange={(e) =>
+            useStore.getState().setChartEngine(activePane, e.target.value as ChartEngine)
+          }
+        >
+          <option value="native">{t('engine_native')}</option>
+          <option value="tradingview">{t('engine_tradingview')}</option>
         </select>
       </div>
 

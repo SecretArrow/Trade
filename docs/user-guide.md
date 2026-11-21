@@ -201,6 +201,22 @@ Move the pointer (or finger) across the chart to show a crosshair. The legend at
 of the pane reports OHLC and volume for the bar under the crosshair, plus the indicator
 values at that timestamp.
 
+### Chart engine
+
+Every pane can pick its rendering engine from the **Chart engine** dropdown in the top
+toolbar:
+
+- **Native** (default) — the built-in Lightweight Charts engine. Works fully offline and
+  keeps all local indicators, drawings, and multi-provider data feeds.
+- **TradingView** — renders the genuine, free TradingView Advanced Chart widget embedded
+  from tradingview.com. It requires an internet connection, and gives you TradingView's
+  full native drawing toolbar plus the ability to change the symbol inside the widget.
+
+The choice is per pane and is remembered across reloads. If the widget cannot load (for
+example offline or blocked by a network policy), the pane shows a notice with a
+**Switch back to native chart** button. Data subscriptions keep running in the
+background either way, so the status pill and watchlist stay live.
+
 ---
 
 ## Indicators

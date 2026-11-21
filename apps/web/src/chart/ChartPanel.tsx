@@ -21,6 +21,7 @@ import { useStore } from '../state/store';
 import { translate } from '../i18n';
 import { checkAlerts } from '../alerts/engine';
 import { DrawingOverlay } from './DrawingOverlay';
+import { TradingViewChart } from './TradingViewChart';
 
 export const THEME_COLORS = {
   dark: {
@@ -88,8 +89,10 @@ export function ChartPanel(props: {
   const outputsRef = useRef<{ id: string; type: string; output: IndicatorOutput | null }[]>([]);
   const outputsVersionRef = useRef(0);
   const legendThrottleRef = useRef(0);
+  const refitOnDataRef = useRef(false);
 
   const pane = useStore((s) => s.panes[paneIndex]);
+  const engine = pane?.engine ?? 'native';
   const indicators = useStore((s) => s.indicators);
   const providerId = useStore((s) => s.providerBySymbol[pane?.symbol ?? ''] ?? 'demo');
   const settings = useStore((s) => s.settings);
@@ -142,6 +145,11 @@ export function ChartPanel(props: {
       series.setData(candleSeriesData(heikinAshi(candles)));
     } else {
       series.setData(candleSeriesData(candles));
+    }
+    // after a chart re-creation (engine switch back to native) restore the view
+    if (refitOnDataRef.current) {
+      refitOnDataRef.current = false;
+      chartRef.current?.timeScale().fitContent();
     }
   }
 
@@ -416,6 +424,7 @@ export function ChartPanel(props: {
       },
     });
     chartRef.current = chart;
+    refitOnDataRef.current = true;
     const observer = new ResizeObserver(() => {
       chart.applyOptions({ width: el.clientWidth, height: el.clientHeight });
     });
@@ -430,7 +439,7 @@ export function ChartPanel(props: {
       priceLinesRef.current = [];
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [engine]);
 
   // ---- theme ----
   useEffect(() => {
@@ -511,7 +520,7 @@ export function ChartPanel(props: {
     applyMainData();
     applyIndicatorOutputs();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pane?.chartType]);
+  }, [pane?.chartType, engine]);
 
   // ---- price scale mode ----
   useEffect(() => {
@@ -520,7 +529,7 @@ export function ChartPanel(props: {
     chart.priceScale('right').applyOptions({
       mode: scaleMode === 'log' ? 1 : scaleMode === 'percent' ? 2 : 0,
     });
-  }, [scaleMode]);
+  }, [scaleMode, engine]);
 
   // ---- feed ----
   useEffect(() => {
@@ -613,7 +622,7 @@ export function ChartPanel(props: {
     };
     chart.subscribeCrosshairMove(handler);
     return () => chart.unsubscribeCrosshairMove(handler);
-  }, [paneKey, pane?.chartType]);
+  }, [paneKey, pane?.chartType, engine]);
 
   if (!pane) return null;
 
@@ -629,66 +638,122 @@ export function ChartPanel(props: {
   return (
     <div
       className={`chart-panel${active ? ' active' : ''}`}
-      ref={containerRef}
       onClick={() => useStore.getState().setActivePane(paneIndex)}
     >
-      <DrawingOverlay
-        chartRef={chartRef}
-        mainSeriesRef={mainSeriesRef}
-        candlesRef={candlesRef}
-        outputsRef={outputsRef}
-        outputsVersionRef={outputsVersionRef}
-        symbol={pane.symbol}
-        drawings={symbolDrawings}
-        activeTool={activeTool}
-        magnet={magnet}
-        theme={theme}
-        tfSeconds={tfSecondsRef.current}
-      />
-      <div className="chart-legend">
-        <div className="legend-row">
-          <span className="legend-symbol">{pane.symbol}</span>
-          <span className="legend-tf">{pane.timeframe}</span>
-          <span className="legend-provider">{providerId}</span>
-        </div>
-        {legend.candle && (
-          <div className="legend-row legend-ohlc">
-            <span>
-              {t('ohlc_legend_open')} {formatPrice(legend.candle.open, 2)}
-            </span>
-            <span>
-              {t('ohlc_legend_high')} {formatPrice(legend.candle.high, 2)}
-            </span>
-            <span>
-              {t('ohlc_legend_low')} {formatPrice(legend.candle.low, 2)}
-            </span>
-            <span>
-              {t('ohlc_legend_close')}{' '}
-              <span
-                className={
-                  legend.prevClose !== null && legend.candle.close >= legend.prevClose
-                    ? 'up'
-                    : 'down'
-                }
-              >
-                {formatPrice(legend.candle.close, 2)}
-              </span>
-            </span>
-            <span className="legend-vol">V {formatCompact(legend.candle.volume)}</span>
+      {engine === 'tradingview' ? (
+        <TradingViewChart
+          symbol={pane.symbol}
+          timeframe={pane.timeframe}
+          theme={theme}
+          locale={locale}
+          paneIndex={paneIndex}
+        />
+      ) : (
+        <>
+          <div className="native-chart" ref={containerRef}>
+            <DrawingOverlay
+              chartRef={chartRef}
+              mainSeriesRef={mainSeriesRef}
+              candlesRef={candlesRef}
+              outputsRef={outputsRef}
+              outputsVersionRef={outputsVersionRef}
+              symbol={pane.symbol}
+              drawings={symbolDrawings}
+              activeTool={activeTool}
+              magnet={magnet}
+              theme={theme}
+              tfSeconds={tfSecondsRef.current}
+            />
+            <div className="chart-legend">
+              <div className="legend-row">
+                <span className="legend-symbol">{pane.symbol}</span>
+                <span className="legend-tf">{pane.timeframe}</span>
+                <span className="legend-provider">{providerId}</span>
+              </div>
+              {legend.candle && (
+                <div className="legend-row legend-ohlc">
+                  <span>
+                    {t('ohlc_legend_open')} {formatPrice(legend.candle.open, 2)}
+                  </span>
+                  <span>
+                    {t('ohlc_legend_high')} {formatPrice(legend.candle.high, 2)}
+                  </span>
+                  <span>
+                    {t('ohlc_legend_low')} {formatPrice(legend.candle.low, 2)}
+                  </span>
+                  <span>
+                    {t('ohlc_legend_close')}{' '}
+                    <span
+                      className={
+                        legend.prevClose !== null && legend.candle.close >= legend.prevClose
+                          ? 'up'
+                          : 'down'
+                      }
+                    >
+                      {formatPrice(legend.candle.close, 2)}
+                    </span>
+                  </span>
+                  <span className="legend-vol">V {formatCompact(legend.candle.volume)}</span>
+                </div>
+              )}
+              {indicators.filter((i) => i.visible).length > 0 && (
+                <div className="legend-row legend-indicators">
+                  {indicators
+                    .filter((i) => i.visible)
+                    .map((i) => (
+                      <span key={i.id} className="legend-indicator">
+                        {getDefinition(i.type)?.name ?? i.type}
+                      </span>
+                    ))}
+                </div>
+              )}
+            </div>
           </div>
-        )}
-        {indicators.filter((i) => i.visible).length > 0 && (
-          <div className="legend-row legend-indicators">
-            {indicators
-              .filter((i) => i.visible)
-              .map((i) => (
-                <span key={i.id} className="legend-indicator">
-                  {getDefinition(i.type)?.name ?? i.type}
-                </span>
-              ))}
+          <div className="chart-actions">
+            <button
+              type="button"
+              className="icon-btn"
+              title={t('screenshot')}
+              onClick={() => {
+                const chart = chartRef.current;
+                if (!chart) return;
+                chart.takeScreenshot().toBlob((blob) => {
+                  if (!blob) return;
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = `trade-${pane.symbol.replace('/', '')}-${pane.timeframe}.png`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                });
+              }}
+            >
+              PNG
+            </button>
+            <button
+              type="button"
+              className="icon-btn"
+              title={t('fullscreen')}
+              onClick={() => {
+                const el = containerRef.current?.closest('.chart-cell');
+                if (!el) return;
+                if (document.fullscreenElement) document.exitFullscreen();
+                else el.requestFullscreen().catch(() => undefined);
+              }}
+            >
+              FS
+            </button>
+            <button
+              type="button"
+              className="icon-btn"
+              title="Fit"
+              onClick={() => chartRef.current?.timeScale().fitContent()}
+            >
+              FIT
+            </button>
           </div>
-        )}
-      </div>
+        </>
+      )}
       <div className={`status-badge ${statusInfo.status}`}>
         <span className="status-dot" />
         {statusLabel}
@@ -705,49 +770,6 @@ export function ChartPanel(props: {
       )}
       {feedError && <div className="feed-error">{feedError}</div>}
       {providerId === 'demo' && <div className="demo-badge">{t('demo_notice')}</div>}
-      <div className="chart-actions">
-        <button
-          type="button"
-          className="icon-btn"
-          title={t('screenshot')}
-          onClick={() => {
-            const chart = chartRef.current;
-            if (!chart) return;
-            chart.takeScreenshot().toBlob((blob) => {
-              if (!blob) return;
-              const url = URL.createObjectURL(blob);
-              const a = document.createElement('a');
-              a.href = url;
-              a.download = `trade-${pane.symbol.replace('/', '')}-${pane.timeframe}.png`;
-              a.click();
-              URL.revokeObjectURL(url);
-            });
-          }}
-        >
-          PNG
-        </button>
-        <button
-          type="button"
-          className="icon-btn"
-          title={t('fullscreen')}
-          onClick={() => {
-            const el = containerRef.current?.parentElement;
-            if (!el) return;
-            if (document.fullscreenElement) document.exitFullscreen();
-            else el.requestFullscreen().catch(() => undefined);
-          }}
-        >
-          FS
-        </button>
-        <button
-          type="button"
-          className="icon-btn"
-          title="Fit"
-          onClick={() => chartRef.current?.timeScale().fitContent()}
-        >
-          FIT
-        </button>
-      </div>
     </div>
   );
 }

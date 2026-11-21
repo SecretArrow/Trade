@@ -30,6 +30,9 @@ export interface IndicatorTemplate {
 
 export type AlertKind = 'price-above' | 'price-below' | 'price-cross';
 
+/** Rendering engine for a chart pane (native Lightweight Charts vs embed). */
+export type ChartEngine = 'native' | 'tradingview';
+
 export interface PriceAlert {
   id: string;
   symbol: string;
@@ -46,6 +49,8 @@ export interface PaneState {
   symbol: string;
   timeframe: Timeframe;
   chartType: ChartType;
+  /** Rendering engine; omitted (older persisted state) means 'native'. */
+  engine?: ChartEngine;
 }
 
 export interface ToastMessage {
@@ -101,6 +106,7 @@ interface AppState {
   setSymbol(index: number, symbol: string): void;
   setTimeframe(index: number, tf: Timeframe): void;
   setChartType(index: number, type: ChartType): void;
+  setChartEngine(index: number, engine: ChartEngine): void;
   setScaleMode(mode: ScaleMode): void;
   toggleMagnet(): void;
   setProvider(symbol: string, providerId: string): void;
@@ -238,6 +244,11 @@ export const useStore = create<AppState>()(
         setChartType: (index, chartType) => {
           const panes = [...get().panes];
           if (panes[index]) panes[index] = { ...panes[index], chartType };
+          set({ panes, activePane: index });
+        },
+        setChartEngine: (index, engine) => {
+          const panes = [...get().panes];
+          if (panes[index]) panes[index] = { ...panes[index], engine };
           set({ panes, activePane: index });
         },
         setScaleMode: (scaleMode) => set({ scaleMode }),
