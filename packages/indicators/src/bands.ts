@@ -11,11 +11,11 @@ import {
   trueRanges,
 } from './util';
 
-export interface BandResult {
+export type BandResult = {
   upper: PlotValues;
   middle: PlotValues;
   lower: PlotValues;
-}
+};
 
 export function bollingerBands(
   candles: Candle[],

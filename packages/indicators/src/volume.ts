@@ -108,10 +108,10 @@ export function vwap(candles: Candle[], anchor: VwapAnchor = 'day'): PlotValues 
   return out;
 }
 
-export interface VolumeResult {
+export type VolumeResult = {
   volume: PlotValues;
   volumeMa: PlotValues;
-}
+};
 
 /** Volume histogram values plus a moving average. */
 export function volumeWithMa(candles: Candle[], maPeriod: number): VolumeResult {

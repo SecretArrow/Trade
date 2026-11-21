@@ -1,5 +1,6 @@
 import type { Candle } from '@trade/core';
 import { mulberry32 } from '@trade/core';
+import { describe, expect, it } from 'vitest';
 import { computeIndicator, DEFINITIONS, defaultParams, getDefinition } from '../src/definitions';
 
 function makeCandles(count: number): Candle[] {
