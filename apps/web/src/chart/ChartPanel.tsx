@@ -22,6 +22,7 @@ import { translate } from '../i18n';
 import { checkAlerts } from '../alerts/engine';
 import { DrawingOverlay } from './DrawingOverlay';
 import { TradingViewChart } from './TradingViewChart';
+import { DrawingsPrimitive } from './overlayEngine';
 
 export const THEME_COLORS = {
   dark: {
@@ -90,6 +91,10 @@ export function ChartPanel(props: {
   const outputsVersionRef = useRef(0);
   const legendThrottleRef = useRef(0);
   const refitOnDataRef = useRef(false);
+  // Renders drawings inside the chart's own render loop (survives series/chart
+  // re-creation; re-attached whenever the main series is rebuilt).
+  const overlayRef = useRef<DrawingsPrimitive | null>(null);
+  if (overlayRef.current === null) overlayRef.current = new DrawingsPrimitive();
 
   const pane = useStore((s) => s.panes[paneIndex]);
   const engine = pane?.engine ?? 'native';
@@ -460,6 +465,11 @@ export function ChartPanel(props: {
     const currentPane = paneRef.current;
     if (!chart || !currentPane) return;
     if (mainSeriesRef.current) {
+      try {
+        if (overlayRef.current) mainSeriesRef.current.detachPrimitive(overlayRef.current);
+      } catch {
+        /* series may already be detached */
+      }
       chart.removeSeries(mainSeriesRef.current);
       mainSeriesRef.current = null;
       priceLinesRef.current = [];
@@ -516,6 +526,9 @@ export function ChartPanel(props: {
           wickUpColor: up,
           wickDownColor: down,
         });
+    }
+    if (mainSeriesRef.current && overlayRef.current) {
+      mainSeriesRef.current.attachPrimitive(overlayRef.current);
     }
     applyMainData();
     applyIndicatorOutputs();
@@ -657,6 +670,7 @@ export function ChartPanel(props: {
               candlesRef={candlesRef}
               outputsRef={outputsRef}
               outputsVersionRef={outputsVersionRef}
+              overlayRef={overlayRef}
               symbol={pane.symbol}
               drawings={symbolDrawings}
               activeTool={activeTool}

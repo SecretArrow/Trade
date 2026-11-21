@@ -15,6 +15,7 @@ import {
   serializeDrawings,
 } from '../src/serialize';
 import { newDrawing, TOOL_MIN_POINTS } from '../src/model';
+import { constrainPointPx, constrainSquarePx } from '../src/geometry';
 
 describe('geometry', () => {
   it('computes distance to a segment', () => {
@@ -233,5 +234,42 @@ describe('serialization', () => {
     for (const tool of tools) {
       expect(TOOL_MIN_POINTS[tool as keyof typeof TOOL_MIN_POINTS]).toBeGreaterThanOrEqual(1);
     }
+  });
+});
+
+describe('geometry constraints', () => {
+  it('snaps a near-horizontal drag to exactly 0 degrees', () => {
+    const out = constrainPointPx({ x: 0, y: 0 }, { x: 100, y: 9 });
+    expect(out.y).toBeCloseTo(0, 6);
+    expect(out.x).toBeCloseTo(Math.hypot(100, 9), 5);
+  });
+
+  it('snaps to 45 degrees when closer to the diagonal', () => {
+    const out = constrainPointPx({ x: 0, y: 0 }, { x: 100, y: 80 });
+    expect(out.x).toBeCloseTo(out.y, 6);
+  });
+
+  it('snaps to 90 degrees for a mostly vertical drag', () => {
+    const out = constrainPointPx({ x: 10, y: 10 }, { x: 12, y: 110 });
+    expect(out.x).toBeCloseTo(10, 6);
+    // distance from base is preserved: hypot(2, 100)
+    expect(out.y).toBeCloseTo(10 + Math.hypot(2, 100), 5);
+  });
+
+  it('keeps the point unchanged at the base', () => {
+    expect(constrainPointPx({ x: 5, y: 5 }, { x: 5, y: 5 })).toEqual({ x: 5, y: 5 });
+  });
+
+  it('constrains a rectangle drag to a square on the dominant axis', () => {
+    const out = constrainSquarePx({ x: 0, y: 0 }, { x: 80, y: 30 });
+    expect(Math.abs(out.x)).toBe(80);
+    expect(Math.abs(out.y)).toBe(80);
+  });
+
+  it('constrains upward-left drags too', () => {
+    const out = constrainSquarePx({ x: 100, y: 100 }, { x: 20, y: 90 });
+    // dx = -80 dominates, so both sides become 80 long
+    expect(out.x).toBe(20);
+    expect(out.y).toBe(20);
   });
 });

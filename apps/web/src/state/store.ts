@@ -119,9 +119,13 @@ interface AppState {
   applyTemplate(name: string): void;
   deleteTemplate(name: string): void;
   addDrawing(drawing: Drawing): void;
-  updateDrawing(id: string, patch: Partial<Drawing>): void;
+  updateDrawing(id: string, patch: Partial<Drawing>, opts?: { silent?: boolean }): void;
+  /** Apply one patch to many drawings with a single undo entry. */
+  patchDrawings(ids: string[], patch: Partial<Drawing>): void;
+  /** Push the current drawings snapshot onto the undo stack (for live edit sessions). */
+  snapshotHistory(): void;
   removeDrawing(id: string): void;
-  duplicateDrawing(id: string): void;
+  duplicateDrawing(id: string): string | null;
   clearDrawings(symbol: string): void;
   undo(): void;
   redo(): void;
@@ -304,10 +308,18 @@ export const useStore = create<AppState>()(
           pushHistory();
           set({ drawings: [...get().drawings, drawing] });
         },
-        updateDrawing: (id, patch) => {
-          pushHistory();
+        updateDrawing: (id, patch, opts) => {
+          if (!opts?.silent) pushHistory();
           set({ drawings: get().drawings.map((d) => (d.id === id ? { ...d, ...patch } : d)) });
         },
+        patchDrawings: (ids, patch) => {
+          const set2 = new Set(ids);
+          pushHistory();
+          set({
+            drawings: get().drawings.map((d) => (set2.has(d.id) ? { ...d, ...patch } : d)),
+          });
+        },
+        snapshotHistory: () => pushHistory(),
         removeDrawing: (id) => {
           pushHistory();
           set({
@@ -317,7 +329,7 @@ export const useStore = create<AppState>()(
         },
         duplicateDrawing: (id) => {
           const source = get().drawings.find((d) => d.id === id);
-          if (!source) return;
+          if (!source) return null;
           pushHistory();
           const copy: Drawing = {
             ...source,
@@ -325,6 +337,7 @@ export const useStore = create<AppState>()(
             zIndex: nextZIndex(get().drawings),
           };
           set({ drawings: [...get().drawings, copy] });
+          return copy.id;
         },
         clearDrawings: (symbol) => {
           pushHistory();
@@ -334,13 +347,21 @@ export const useStore = create<AppState>()(
           if (undoStack.length === 0) return;
           const prev = undoStack.pop() as HistoryEntry;
           redoStack.push({ drawings: [...get().drawings] });
-          set({ drawings: prev.drawings });
+          const selectionExists = prev.drawings.some((d) => d.id === get().selectedDrawingId);
+          set({
+            drawings: prev.drawings,
+            ...(get().selectedDrawingId && !selectionExists ? { selectedDrawingId: null } : {}),
+          });
         },
         redo: () => {
           if (redoStack.length === 0) return;
           const next = redoStack.pop() as HistoryEntry;
           undoStack.push({ drawings: [...get().drawings] });
-          set({ drawings: next.drawings });
+          const selectionExists = next.drawings.some((d) => d.id === get().selectedDrawingId);
+          set({
+            drawings: next.drawings,
+            ...(get().selectedDrawingId && !selectionExists ? { selectedDrawingId: null } : {}),
+          });
         },
 
         addAlert: (alert) =>

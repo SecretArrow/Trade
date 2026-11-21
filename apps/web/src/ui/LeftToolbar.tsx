@@ -6,9 +6,12 @@ import { ToolIcon } from './icons';
 
 interface ToolEntry {
   tool: DrawingTool;
-  title: string;
+  titleKey: string;
   shortcut?: string;
 }
+
+/** Map a tool id to its i18n label key: 'fib-retracement' → 'tool_fib_retracement'. */
+const toolKey = (tool: DrawingTool): string => `tool_${tool.replace(/-/g, '_')}`;
 
 /**
  * Flyout groups — TradingView-style. Primary tool is shown on the button;
@@ -26,64 +29,64 @@ const FLYOUTS: FlyoutGroup[] = [
     id: 'lines',
     primary: 'trendline',
     tools: [
-      { tool: 'trendline', title: 'Trend line', shortcut: 'Alt+T' },
-      { tool: 'ray', title: 'Ray' },
-      { tool: 'extended-line', title: 'Extended line' },
-      { tool: 'horizontal-line', title: 'Horizontal line', shortcut: 'Alt+H' },
-      { tool: 'horizontal-ray', title: 'Horizontal ray' },
-      { tool: 'vertical-line', title: 'Vertical line' },
+      { tool: 'trendline', titleKey: toolKey('trendline'), shortcut: 'Alt+T' },
+      { tool: 'ray', titleKey: toolKey('ray') },
+      { tool: 'extended-line', titleKey: toolKey('extended-line') },
+      { tool: 'horizontal-line', titleKey: toolKey('horizontal-line'), shortcut: 'Alt+H' },
+      { tool: 'horizontal-ray', titleKey: toolKey('horizontal-ray') },
+      { tool: 'vertical-line', titleKey: toolKey('vertical-line') },
     ],
   },
   {
     id: 'shapes',
     primary: 'parallel-channel',
     tools: [
-      { tool: 'parallel-channel', title: 'Parallel channel' },
-      { tool: 'rectangle', title: 'Rectangle', shortcut: 'Alt+R' },
-      { tool: 'ellipse', title: 'Ellipse' },
-      { tool: 'triangle', title: 'Triangle' },
-      { tool: 'polyline', title: 'Path / polyline' },
-      { tool: 'brush', title: 'Brush' },
-      { tool: 'arrow', title: 'Arrow' },
+      { tool: 'parallel-channel', titleKey: toolKey('parallel-channel') },
+      { tool: 'rectangle', titleKey: toolKey('rectangle'), shortcut: 'Alt+R' },
+      { tool: 'ellipse', titleKey: toolKey('ellipse') },
+      { tool: 'triangle', titleKey: toolKey('triangle') },
+      { tool: 'polyline', titleKey: toolKey('polyline') },
+      { tool: 'brush', titleKey: toolKey('brush') },
+      { tool: 'arrow', titleKey: toolKey('arrow') },
     ],
   },
   {
     id: 'annotate',
     primary: 'text-label',
     tools: [
-      { tool: 'text-label', title: 'Text label' },
-      { tool: 'price-label', title: 'Price label' },
-      { tool: 'callout', title: 'Callout' },
-      { tool: 'flag', title: 'Flag' },
-      { tool: 'price-range', title: 'Price range' },
-      { tool: 'date-range', title: 'Date range' },
-      { tool: 'date-price-range', title: 'Date & price range' },
-      { tool: 'measure', title: 'Measure' },
+      { tool: 'text-label', titleKey: toolKey('text-label') },
+      { tool: 'price-label', titleKey: toolKey('price-label') },
+      { tool: 'callout', titleKey: toolKey('callout') },
+      { tool: 'flag', titleKey: toolKey('flag') },
+      { tool: 'price-range', titleKey: toolKey('price-range') },
+      { tool: 'date-range', titleKey: toolKey('date-range') },
+      { tool: 'date-price-range', titleKey: toolKey('date-price-range') },
+      { tool: 'measure', titleKey: toolKey('measure') },
     ],
   },
   {
     id: 'fib',
     primary: 'fib-retracement',
     tools: [
-      { tool: 'fib-retracement', title: 'Fibonacci retracement', shortcut: 'Alt+F' },
-      { tool: 'fib-extension', title: 'Fibonacci extension' },
-      { tool: 'fib-channel', title: 'Fibonacci channel' },
-      { tool: 'fib-time-zones', title: 'Fibonacci time zones' },
-      { tool: 'fib-fan', title: 'Fibonacci fan' },
-      { tool: 'fib-arcs', title: 'Fibonacci arcs' },
-      { tool: 'gann-fan', title: 'Gann fan' },
-      { tool: 'gann-box', title: 'Gann box' },
-      { tool: 'pitchfork', title: 'Andrews pitchfork' },
-      { tool: 'regression-trend', title: 'Regression trend' },
+      { tool: 'fib-retracement', titleKey: toolKey('fib-retracement'), shortcut: 'Alt+F' },
+      { tool: 'fib-extension', titleKey: toolKey('fib-extension') },
+      { tool: 'fib-channel', titleKey: toolKey('fib-channel') },
+      { tool: 'fib-time-zones', titleKey: toolKey('fib-time-zones') },
+      { tool: 'fib-fan', titleKey: toolKey('fib-fan') },
+      { tool: 'fib-arcs', titleKey: toolKey('fib-arcs') },
+      { tool: 'gann-fan', titleKey: toolKey('gann-fan') },
+      { tool: 'gann-box', titleKey: toolKey('gann-box') },
+      { tool: 'pitchfork', titleKey: toolKey('pitchfork') },
+      { tool: 'regression-trend', titleKey: toolKey('regression-trend') },
     ],
   },
   {
     id: 'position',
     primary: 'position-long',
     tools: [
-      { tool: 'position-long', title: 'Long position tool (R:R)', shortcut: 'Alt+P' },
-      { tool: 'position-short', title: 'Short position tool (R:R)' },
-      { tool: 'anchored-vwap', title: 'Anchored VWAP', shortcut: 'Alt+V' },
+      { tool: 'position-long', titleKey: toolKey('position-long'), shortcut: 'Alt+P' },
+      { tool: 'position-short', titleKey: toolKey('position-short') },
+      { tool: 'anchored-vwap', titleKey: toolKey('anchored-vwap'), shortcut: 'Alt+V' },
     ],
   },
 ];
@@ -157,8 +160,8 @@ export function LeftToolbar() {
         const isActive = group.tools.some((e) => e.tool === activeTool);
         const title =
           activeEntry.tool === primaryEntry.tool
-            ? primaryEntry.title
-            : `${primaryEntry.title} · ${activeEntry.title}`;
+            ? t(primaryEntry.titleKey)
+            : `${t(primaryEntry.titleKey)} · ${t(activeEntry.titleKey)}`;
         return (
           <div
             key={group.id}
@@ -205,11 +208,11 @@ export function LeftToolbar() {
                     role="menuitemradio"
                     aria-checked={activeTool === entry.tool}
                     className={`flyout-item${activeTool === entry.tool ? ' active' : ''}`}
-                    title={`${entry.title}${entry.shortcut ? ` (${entry.shortcut})` : ''}`}
+                    title={`${t(entry.titleKey)}${entry.shortcut ? ` (${entry.shortcut})` : ''}`}
                     onClick={() => toggleTool(entry.tool)}
                   >
                     <ToolIcon tool={entry.tool} size={16} />
-                    <span className="flyout-label">{entry.title}</span>
+                    <span className="flyout-label">{t(entry.titleKey)}</span>
                     {entry.shortcut && <span className="flyout-shortcut">{entry.shortcut}</span>}
                   </button>
                 ))}
@@ -235,20 +238,18 @@ export function LeftToolbar() {
               if (entry.tool === 'redo') return useStore.getState().redo();
               if (entry.tool === 'magnet') return useStore.getState().toggleMagnet();
               if (entry.tool === 'hide-all') {
-                const next = !allHidden;
-                for (const d of symbolDrawings)
-                  useStore.getState().updateDrawing(d.id, { hidden: next });
+                const ids = symbolDrawings.map((d) => d.id);
+                useStore.getState().patchDrawings(ids, { hidden: true });
                 return;
               }
               if (entry.tool === 'show-all') {
-                for (const d of symbolDrawings)
-                  useStore.getState().updateDrawing(d.id, { hidden: false });
+                const ids = symbolDrawings.map((d) => d.id);
+                useStore.getState().patchDrawings(ids, { hidden: false });
                 return;
               }
               if (entry.tool === 'lock-all') {
-                const next = !allLocked;
-                for (const d of symbolDrawings)
-                  useStore.getState().updateDrawing(d.id, { locked: next });
+                const ids = symbolDrawings.map((d) => d.id);
+                useStore.getState().patchDrawings(ids, { locked: true });
                 return;
               }
             };

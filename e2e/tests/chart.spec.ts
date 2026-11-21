@@ -97,6 +97,90 @@ test.describe('charting app (demo data)', () => {
     await expect(page.locator('.tool-btn.primary.active')).toHaveCount(1);
   });
 
+  test('draws a trendline with the mouse and opens the style bar', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    await expect(page.locator('canvas').first()).toBeVisible();
+    await page.waitForTimeout(700); // let the demo candles stream in
+    await page.locator('.tool-btn.primary').first().click(); // trendline
+    await expect(page.locator('.tool-btn.primary.active')).toHaveCount(1);
+    const chart = page.locator('.native-chart').first();
+    const box = await chart.boundingBox();
+    expect(box).not.toBeNull();
+    const cx = box!.x + box!.width * 0.45;
+    const cy = box!.y + box!.height * 0.55;
+    // first anchor
+    await page.mouse.move(cx, cy);
+    await page.mouse.down();
+    await page.mouse.up();
+    // live preview follows the cursor between clicks
+    await page.mouse.move(cx + 160, cy - 70, { steps: 5 });
+    // second anchor -> placement finalises, drawing gets selected
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(page.locator('.drawing-style-bar')).toBeVisible();
+    // the tool disarms after placement
+    await expect(page.locator('.tool-btn.primary.active')).toHaveCount(0);
+  });
+
+  test('style bar edits the drawing and the object tree lists it', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    await expect(page.locator('canvas').first()).toBeVisible();
+    await page.waitForTimeout(700);
+    await page.locator('.tool-btn.primary').first().click();
+    const chart = page.locator('.native-chart').first();
+    const box = await chart.boundingBox();
+    const cx = box!.x + box!.width * 0.45;
+    const cy = box!.y + box!.height * 0.55;
+    await page.mouse.move(cx, cy);
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.mouse.move(cx + 160, cy - 70, { steps: 5 });
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(page.locator('.drawing-style-bar')).toBeVisible();
+    // change the color via a swatch
+    const swatches = page.locator('.style-swatch');
+    await swatches.nth(1).click();
+    await expect(swatches.nth(1)).toHaveClass(/active/);
+    // width + dash buttons apply
+    await page.locator('.style-width-btn').nth(2).click();
+    await expect(page.locator('.style-width-btn').nth(2)).toHaveClass(/active/);
+    // the drawing shows up in the object tree
+    await page.getByRole('tab', { name: 'Objects' }).click();
+    await expect(page.locator('.object-row')).toHaveCount(1);
+  });
+
+  test('right-click on a drawing opens the context menu', async ({ page }) => {
+    const viewport = page.viewportSize();
+    test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
+    await page.goto('/?src=demo');
+    await expect(page.locator('canvas').first()).toBeVisible();
+    await page.waitForTimeout(700);
+    await page.locator('.tool-btn.primary').first().click();
+    const chart = page.locator('.native-chart').first();
+    const box = await chart.boundingBox();
+    const cx = box!.x + box!.width * 0.45;
+    const cy = box!.y + box!.height * 0.55;
+    await page.mouse.move(cx, cy);
+    await page.mouse.down();
+    await page.mouse.up();
+    await page.mouse.move(cx + 160, cy - 70, { steps: 5 });
+    await page.mouse.down();
+    await page.mouse.up();
+    await expect(page.locator('.drawing-style-bar')).toBeVisible();
+    // right-click on the line body (midpoint)
+    await page.mouse.click(cx + 80, cy - 35, { button: 'right' });
+    await expect(page.locator('.drawing-menu')).toBeVisible();
+    await expect(page.locator('.drawing-menu-item').first()).toBeVisible();
+    // Escape closes it
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.drawing-menu')).toHaveCount(0);
+  });
+
   test('strategy tab opens MTF workflow panel', async ({ page }) => {
     const viewport = page.viewportSize();
     test.skip(viewport !== null && viewport.width < 900, 'desktop layout only');
