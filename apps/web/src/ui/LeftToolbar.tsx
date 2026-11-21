@@ -1,58 +1,58 @@
 import type { DrawingTool } from '@trade/drawings';
 import { useStore } from '../state/store';
 import { translate } from '../i18n';
+import { ToolIcon } from './icons';
 
 interface ToolEntry {
   tool: DrawingTool;
-  label: string;
   title: string;
   shortcut?: string;
 }
 
 const GROUPS: ToolEntry[][] = [
   [
-    { tool: 'trendline', label: 'TL', title: 'Trend line', shortcut: 'Alt+T' },
-    { tool: 'ray', label: 'RY', title: 'Ray' },
-    { tool: 'extended-line', label: 'XL', title: 'Extended line' },
-    { tool: 'horizontal-line', label: 'HZ', title: 'Horizontal line', shortcut: 'Alt+H' },
-    { tool: 'horizontal-ray', label: 'HR', title: 'Horizontal ray' },
-    { tool: 'vertical-line', label: 'VT', title: 'Vertical line' },
+    { tool: 'trendline', title: 'Trend line', shortcut: 'Alt+T' },
+    { tool: 'ray', title: 'Ray' },
+    { tool: 'extended-line', title: 'Extended line' },
+    { tool: 'horizontal-line', title: 'Horizontal line', shortcut: 'Alt+H' },
+    { tool: 'horizontal-ray', title: 'Horizontal ray' },
+    { tool: 'vertical-line', title: 'Vertical line' },
   ],
   [
-    { tool: 'parallel-channel', label: 'CH', title: 'Parallel channel' },
-    { tool: 'rectangle', label: 'RC', title: 'Rectangle', shortcut: 'Alt+R' },
-    { tool: 'ellipse', label: 'EL', title: 'Ellipse' },
-    { tool: 'triangle', label: 'TR', title: 'Triangle' },
-    { tool: 'polyline', label: 'PA', title: 'Path / polyline' },
-    { tool: 'brush', label: 'BR', title: 'Brush' },
-    { tool: 'arrow', label: 'AR', title: 'Arrow' },
+    { tool: 'parallel-channel', title: 'Parallel channel' },
+    { tool: 'rectangle', title: 'Rectangle', shortcut: 'Alt+R' },
+    { tool: 'ellipse', title: 'Ellipse' },
+    { tool: 'triangle', title: 'Triangle' },
+    { tool: 'polyline', title: 'Path / polyline' },
+    { tool: 'brush', title: 'Brush' },
+    { tool: 'arrow', title: 'Arrow' },
   ],
   [
-    { tool: 'text-label', label: 'TX', title: 'Text label' },
-    { tool: 'price-label', label: 'PL', title: 'Price label' },
-    { tool: 'callout', label: 'CO', title: 'Callout' },
-    { tool: 'flag', label: 'FG', title: 'Flag' },
-    { tool: 'price-range', label: 'PR', title: 'Price range' },
-    { tool: 'date-range', label: 'DR', title: 'Date range' },
-    { tool: 'date-price-range', label: 'DP', title: 'Date & price range' },
-    { tool: 'measure', label: 'MS', title: 'Measure' },
+    { tool: 'text-label', title: 'Text label' },
+    { tool: 'price-label', title: 'Price label' },
+    { tool: 'callout', title: 'Callout' },
+    { tool: 'flag', title: 'Flag' },
+    { tool: 'price-range', title: 'Price range' },
+    { tool: 'date-range', title: 'Date range' },
+    { tool: 'date-price-range', title: 'Date & price range' },
+    { tool: 'measure', title: 'Measure' },
   ],
   [
-    { tool: 'fib-retracement', label: 'FB', title: 'Fibonacci retracement', shortcut: 'Alt+F' },
-    { tool: 'fib-extension', label: 'FE', title: 'Fibonacci extension' },
-    { tool: 'fib-channel', label: 'FC', title: 'Fibonacci channel' },
-    { tool: 'fib-time-zones', label: 'FT', title: 'Fibonacci time zones' },
-    { tool: 'fib-fan', label: 'FF', title: 'Fibonacci fan' },
-    { tool: 'fib-arcs', label: 'FA', title: 'Fibonacci arcs' },
-    { tool: 'gann-fan', label: 'GF', title: 'Gann fan' },
-    { tool: 'gann-box', label: 'GB', title: 'Gann box' },
-    { tool: 'pitchfork', label: 'PF', title: 'Andrews pitchfork' },
-    { tool: 'regression-trend', label: 'RG', title: 'Regression trend' },
+    { tool: 'fib-retracement', title: 'Fibonacci retracement', shortcut: 'Alt+F' },
+    { tool: 'fib-extension', title: 'Fibonacci extension' },
+    { tool: 'fib-channel', title: 'Fibonacci channel' },
+    { tool: 'fib-time-zones', title: 'Fibonacci time zones' },
+    { tool: 'fib-fan', title: 'Fibonacci fan' },
+    { tool: 'fib-arcs', title: 'Fibonacci arcs' },
+    { tool: 'gann-fan', title: 'Gann fan' },
+    { tool: 'gann-box', title: 'Gann box' },
+    { tool: 'pitchfork', title: 'Andrews pitchfork' },
+    { tool: 'regression-trend', title: 'Regression trend' },
   ],
   [
-    { tool: 'position-long', label: 'LO', title: 'Long position tool (R:R)', shortcut: 'Alt+P' },
-    { tool: 'position-short', label: 'SH', title: 'Short position tool (R:R)' },
-    { tool: 'anchored-vwap', label: 'VW', title: 'Anchored VWAP', shortcut: 'Alt+V' },
+    { tool: 'position-long', title: 'Long position tool (R:R)', shortcut: 'Alt+P' },
+    { tool: 'position-short', title: 'Short position tool (R:R)' },
+    { tool: 'anchored-vwap', title: 'Anchored VWAP', shortcut: 'Alt+V' },
   ],
 ];
 
@@ -78,7 +78,7 @@ export function LeftToolbar() {
                 useStore.getState().setActiveTool(activeTool === entry.tool ? null : entry.tool)
               }
             >
-              {entry.label}
+              <ToolIcon tool={entry.tool} />
             </button>
           ))}
         </div>
@@ -88,17 +88,19 @@ export function LeftToolbar() {
           type="button"
           className="tool-btn"
           title={`${t('undo')} (Ctrl+Z)`}
+          aria-label={t('undo')}
           onClick={() => useStore.getState().undo()}
         >
-          UN
+          <ToolIcon tool="undo" />
         </button>
         <button
           type="button"
           className="tool-btn"
           title={`${t('redo')} (Ctrl+Y)`}
+          aria-label={t('redo')}
           onClick={() => useStore.getState().redo()}
         >
-          RE
+          <ToolIcon tool="redo" />
         </button>
       </div>
       {selectedDrawingId && (
@@ -107,17 +109,19 @@ export function LeftToolbar() {
             type="button"
             className="tool-btn"
             title={t('duplicate')}
+            aria-label={t('duplicate')}
             onClick={() => useStore.getState().duplicateDrawing(selectedDrawingId)}
           >
-            DU
+            <ToolIcon tool="duplicate" />
           </button>
           <button
             type="button"
             className="tool-btn danger"
             title={`${t('delete')} (Del)`}
+            aria-label={t('delete')}
             onClick={() => useStore.getState().removeDrawing(selectedDrawingId)}
           >
-            DEL
+            <ToolIcon tool="delete" />
           </button>
         </div>
       )}

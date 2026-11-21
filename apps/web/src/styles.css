@@ -479,13 +479,15 @@ a:focus-visible {
 }
 
 .tool-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 36px;
-  height: 26px;
-  font-size: 10px;
-  font-weight: 600;
+  height: 28px;
   border: 1px solid var(--border);
   border-radius: 6px;
   background: var(--bg);
+  color: var(--text);
 }
 
 .tool-btn:hover {
