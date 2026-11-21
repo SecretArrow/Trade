@@ -45,12 +45,14 @@ export class ReconnectingWs {
       this.options.onStatus?.('open');
       for (const payload of this.sendQueue) this.ws?.send(payload);
       this.sendQueue = [];
-      if (this.options.pingPayload && this.options.pingIntervalMs) {
+      const pingPayload = this.options.pingPayload;
+      const pingIntervalMs = this.options.pingIntervalMs;
+      if (pingPayload && pingIntervalMs) {
         this.pingTimer = setInterval(() => {
           if (this.ws?.readyState === WebSocket.OPEN) {
-            this.ws.send(this.options.pingPayload());
+            this.ws.send(pingPayload());
           }
-        }, this.options.pingIntervalMs);
+        }, pingIntervalMs);
       }
     };
     this.ws.onmessage = (ev) => {
