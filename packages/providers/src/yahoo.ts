@@ -61,7 +61,7 @@ export function mapYahooChart(res: YahooChartResponse): Candle[] {
 /** Yahoo blocks browser CORS; all calls are routed through the optional proxy. */
 export function createYahooProvider(): ProviderAdapter {
   const timeframes = Object.keys(TF_RANGE) as Timeframe[];
-  return {
+  const adapter: ProviderAdapter = {
     id: 'yahoo',
     name: 'Yahoo Finance',
     isProxyInstrument: () => false,
@@ -85,7 +85,6 @@ export function createYahooProvider(): ProviderAdapter {
       return mapYahooChart(res);
     },
     subscribe(symbol, timeframe, onTick, onStatus, settings) {
-      const adapter = this;
       return pollForCandles(
         () => adapter.getCandles({ symbol, timeframe, limit: 5 }, settings),
         onTick,
@@ -115,4 +114,5 @@ export function createYahooProvider(): ProviderAdapter {
       return Date.now() / 1000;
     },
   };
+  return adapter;
 }

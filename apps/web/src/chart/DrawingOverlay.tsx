@@ -713,7 +713,7 @@ export function DrawingOverlay(props: Props) {
 
     const snapPoint = (x: number, y: number): { time: number; price: number } => {
       const time = timeOfX(x);
-      let price = priceOfY(y);
+      const price = priceOfY(y);
       if (time === null || price === null) return { time: time ?? 0, price: price ?? 0 };
       if (!stateRef.current.magnet) return { time, price };
       // magnet: snap to the nearest OHLC of the candle under the cursor

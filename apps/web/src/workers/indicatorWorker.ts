@@ -31,7 +31,7 @@ export interface ResultMessage {
  * updates are batched and recomputed at most every 250 ms so the main thread
  * can keep a steady 60 fps even with 10k candles and many indicators.
  */
-let pending: ComputeRequest | null = null;
+const pending: ComputeRequest | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
 const candlesByPane = new Map<string, Candle[]>();
 const configByPane = new Map<string, ComputeRequest['configs']>();
@@ -82,7 +82,6 @@ self.onmessage = (ev: MessageEvent<ComputeRequest | TickRequest>) => {
     if (timer) return;
     timer = setTimeout(() => {
       timer = null;
-      if (pending) return;
       const req: ComputeRequest = {
         type: 'compute',
         key: msg.key,

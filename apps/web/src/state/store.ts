@@ -152,8 +152,8 @@ interface HistoryEntry {
 export const useStore = create<AppState>()(
   persist(
     (set, get) => {
-      let undoStack: HistoryEntry[] = [];
-      let redoStack: HistoryEntry[] = [];
+      const undoStack: HistoryEntry[] = [];
+      const redoStack: HistoryEntry[] = [];
 
       const pushHistory = () => {
         undoStack.push({ drawings: [...get().drawings] });

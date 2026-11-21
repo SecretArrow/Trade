@@ -36,7 +36,7 @@ export function mapStooqCsv(csv: string): Candle[] {
 
 /** Stooq delayed daily CSV; browser access goes through the optional proxy. */
 export function createStooqProvider(): ProviderAdapter {
-  return {
+  const adapter: ProviderAdapter = {
     id: 'stooq',
     name: 'Stooq (delayed)',
     isProxyInstrument: () => false,
@@ -57,7 +57,6 @@ export function createStooqProvider(): ProviderAdapter {
       return mapStooqCsv(await getText(url));
     },
     subscribe(symbol, timeframe, onTick, onStatus, settings) {
-      const adapter = this;
       return pollForCandles(
         () => adapter.getCandles({ symbol, timeframe, limit: 5 }, settings),
         onTick,
@@ -87,4 +86,5 @@ export function createStooqProvider(): ProviderAdapter {
       return Date.now() / 1000;
     },
   };
+  return adapter;
 }

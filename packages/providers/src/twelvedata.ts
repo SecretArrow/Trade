@@ -60,7 +60,7 @@ export function mapTwelveData(values: TwelveDataValue[]): Candle[] {
 
 export function createTwelveDataProvider(): ProviderAdapter {
   const timeframes = Object.keys(TF) as Timeframe[];
-  return {
+  const adapter: ProviderAdapter = {
     id: 'twelvedata',
     name: 'Twelve Data',
     isProxyInstrument: () => false,
@@ -94,7 +94,6 @@ export function createTwelveDataProvider(): ProviderAdapter {
       return mapTwelveData(res.values);
     },
     subscribe(symbol, timeframe, onTick, onStatus, settings) {
-      const adapter = this;
       return pollForCandles(
         () => adapter.getCandles({ symbol, timeframe, limit: 5 }, settings),
         onTick,
@@ -129,4 +128,5 @@ export function createTwelveDataProvider(): ProviderAdapter {
       return Date.now() / 1000;
     },
   };
+  return adapter;
 }

@@ -37,7 +37,7 @@ export function mapCoinbaseCandles(rows: CoinbaseCandleRow[]): Candle[] {
 
 export function createCoinbaseProvider(): ProviderAdapter {
   const timeframes = Object.keys(TF_SECONDS) as Timeframe[];
-  return {
+  const adapter: ProviderAdapter = {
     id: 'coinbase',
     name: 'Coinbase',
     isProxyInstrument: () => false,
@@ -60,7 +60,6 @@ export function createCoinbaseProvider(): ProviderAdapter {
       return mapCoinbaseCandles(rows);
     },
     subscribe(symbol, timeframe, onTick, onStatus) {
-      const adapter = this;
       return pollForCandles(
         () => adapter.getCandles({ symbol, timeframe, limit: 10 }, {}),
         onTick,
@@ -93,4 +92,5 @@ export function createCoinbaseProvider(): ProviderAdapter {
       return Date.now() / 1000;
     },
   };
+  return adapter;
 }

@@ -137,8 +137,10 @@ export function IndicatorSettingsDialog() {
   const editingId = useStore((s) => s.editingIndicatorId);
   const instance = indicators.find((i) => i.id === editingId);
   const def = instance ? getDefinition(instance.type) : undefined;
+  const [params, setParams] = useState<Record<string, number | string | boolean>>(
+    () => instance?.params ?? {},
+  );
   if (!instance || !def) return null;
-  const [params, setParams] = useState(instance.params);
 
   return (
     <Modal
