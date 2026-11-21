@@ -10,7 +10,7 @@ test.describe('charting app (demo data)', () => {
     await page.goto('/?src=demo');
     await expect(page).toHaveTitle(/Trade/);
     await expect(page.locator('canvas').first()).toBeVisible();
-    await expect(page.getByText('BTC/USDT')).toBeVisible();
+    await expect(page.locator('.legend-symbol').first()).toHaveText('BTC/USDT');
     await expect(page.getByText('For informational purposes only')).toBeVisible();
     // demo provider is the default when no key is set
     await expect(page.locator('.demo-badge')).toBeVisible();
@@ -26,6 +26,8 @@ test.describe('charting app (demo data)', () => {
   });
 
   test('switches timeframe and chart type', async ({ page }) => {
+    const { viewport } = page;
+    test.skip(viewport && viewport.width < 900, 'desktop layout only');
     await page.goto('/?src=demo');
     await page.getByRole('button', { name: '1h', exact: true }).click();
     await expect(page.locator('.legend-tf')).toHaveText('1h');
@@ -63,15 +65,25 @@ test.describe('charting app (demo data)', () => {
     const { viewport } = page;
     test.skip(viewport && viewport.width < 900, 'desktop layout only');
     await page.goto('/?src=demo');
+    await expect(page.locator('canvas').first()).toBeVisible();
     await page.locator('.tool-btn').first().click(); // trendline tool
     const chart = page.locator('.chart-panel').first();
     const box = await chart.boundingBox();
     expect(box).not.toBeNull();
+    expect(box?.width).toBeGreaterThan(100);
+    expect(box?.height).toBeGreaterThan(100);
     const b = box as { x: number; y: number; width: number; height: number };
-    await page.mouse.click(b.x + b.width * 0.3, b.y + b.height * 0.4);
-    await page.mouse.click(b.x + b.width * 0.7, b.y + b.height * 0.6);
+    // Click directly on the chart panel at relative positions so Playwright
+    // auto-waits and routes the pointer events through the container's
+    // capturing pointerdown listener.
+    await chart.click({ position: { x: b.width * 0.3, y: b.height * 0.4 } });
+    await chart.click({ position: { x: b.width * 0.7, y: b.height * 0.6 } });
     // the tool resets itself after placement
-    await expect(page.locator('.tool-btn.first-active')).toHaveCount(0);
+    await expect(page.locator('.tool-btn.active')).toHaveCount(0);
+
+    // Confirm the drawing was actually added before reloading.
+    await page.getByRole('tab', { name: 'Objects' }).click();
+    await expect(page.locator('.object-row')).toHaveCount(1);
 
     await page.reload();
     await expect(page.locator('canvas').first()).toBeVisible();

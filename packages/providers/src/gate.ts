@@ -32,8 +32,8 @@ export function mapGateCandles(rows: GateCandleRow[]): Candle[] {
     rows.map((r) => ({
       time: Number.parseInt(r[0], 10),
       open: Number.parseFloat(r[5]),
-      high: Number.parseFloat(r[4]),
-      low: Number.parseFloat(r[3]),
+      high: Number.parseFloat(r[3]),
+      low: Number.parseFloat(r[4]),
       close: Number.parseFloat(r[2]),
       volume: Number.parseFloat(r[6]),
     })),

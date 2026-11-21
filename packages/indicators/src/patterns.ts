@@ -33,10 +33,12 @@ function range(c: Candle): number {
 
 export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): ChartMarker[] {
   const out: ChartMarker[] = [];
-  for (let i = 2; i < candles.length; i++) {
+  for (let i = 1; i < candles.length; i++) {
     const c = candles[i];
     const p = candles[i - 1];
-    const pp = candles[i - 2];
+    // Two-candle patterns only need `c` and `p`; three-candle patterns below
+    // guard on `pp` so the loop can safely start at i = 1.
+    const pp = i >= 2 ? candles[i - 2] : null;
 
     if (
       enabled.has('bullish-engulfing') &&
@@ -75,7 +77,11 @@ export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): Cha
     if (enabled.has('doji') && range(c) > 0 && bodySize(c) <= range(c) * 0.1) {
       out.push(m(c, 'inBar', '#f0a92e', 'circle', 'Doji'));
     }
+    if (enabled.has('inside-bar') && c.high < p.high && c.low > p.low) {
+      out.push(m(c, 'aboveBar', '#7d8590', 'circle', 'IB'));
+    }
     if (
+      pp &&
       enabled.has('morning-star') &&
       !isBull(pp) &&
       bodySize(p) < bodySize(pp) * 0.5 &&
@@ -85,6 +91,7 @@ export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): Cha
       out.push(m(c, 'belowBar', '#26a69a', 'arrowUp', 'M.Star'));
     }
     if (
+      pp &&
       enabled.has('evening-star') &&
       isBull(pp) &&
       bodySize(p) < bodySize(pp) * 0.5 &&
@@ -93,10 +100,8 @@ export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): Cha
     ) {
       out.push(m(c, 'aboveBar', '#ef5350', 'arrowDown', 'E.Star'));
     }
-    if (enabled.has('inside-bar') && c.high < p.high && c.low > p.low) {
-      out.push(m(c, 'aboveBar', '#7d8590', 'circle', 'IB'));
-    }
     if (
+      pp &&
       enabled.has('three-white-soldiers') &&
       isBull(pp) &&
       isBull(p) &&
@@ -108,6 +113,7 @@ export function detectPatterns(candles: Candle[], enabled: Set<PatternKey>): Cha
       out.push(m(c, 'belowBar', '#26a69a', 'arrowUp', '3 soldiers'));
     }
     if (
+      pp &&
       enabled.has('three-black-crows') &&
       !isBull(pp) &&
       !isBull(p) &&

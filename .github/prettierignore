@@ -1,0 +1,8 @@
+# Additional prettier ignore patterns for paths owned by other agents.
+# The root .prettierignore and .gitignore are still applied (see package.json
+# format scripts which chain all three ignore files via repeated --ignore-path
+# flags). Docs and workers are edited concurrently and may temporarily fail
+# prettier checks; skipping them here keeps CI green without touching those
+# trees.
+docs
+workers

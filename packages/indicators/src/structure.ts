@@ -74,17 +74,19 @@ export function supportResistance(candles: Candle[], options: SrOptions = {}): S
     const firstIdx = Math.min(...cluster.map((p) => p.index));
     const lastIdx = Math.max(...cluster.map((p) => p.index));
 
-    // count body crossings and wick tests after the zone formed
+    // count body crossings and wick tests after the zone formed.
+    // A crossing is registered when a candle CLOSES on the opposite side of
+    // the zone from the previously established side; a close inside the zone
+    // after a side was established counts as a wick test (price returned to
+    // the zone without a decisive break).
     let crossings = 0;
     let wickTests = 0;
     let touches = cluster.length;
     let side: 'above' | 'below' | null = null;
     for (let i = firstIdx + 1; i < candles.length; i++) {
       const c = candles[i];
-      const cTop = bodyTop(c);
-      const cBottom = bodyBottom(c);
-      const nowSide: 'above' | 'below' =
-        cBottom > top ? 'above' : cTop < bottom ? 'below' : 'inside';
+      const nowSide: 'above' | 'below' | 'inside' =
+        c.close > top ? 'above' : c.close < bottom ? 'below' : 'inside';
       if (nowSide === 'inside') {
         if (side === 'above' || side === 'below') {
           // re-entering the zone from one side: a wick test or body test
@@ -459,7 +461,10 @@ export function orderBlocks(
 ): ZoneOut[] {
   const atr = atrValues(candles, atrPeriod);
   const out: ZoneOut[] = [];
-  for (let i = 0; i + 4 <= candles.length - 1; i++) {
+  // We need at least 3 candles after the origin (the impulse leg) plus any
+  // remaining candles for mitigation checks. The origin itself can sit as
+  // late as the 4th-from-last candle so the impulse can span the final 3.
+  for (let i = 0; i + 4 <= candles.length; i++) {
     const a = atr[i];
     if (a === null) continue;
     const origin = candles[i];

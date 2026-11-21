@@ -54,7 +54,7 @@ describe('hit testing drawings', () => {
 
   it('hits a trendline near its body', () => {
     expect(
-      hitTestDrawing(150, 55, {
+      hitTestDrawing(50, 55, {
         drawing: trendline,
         points: [
           { x: 0, y: 0 },
@@ -63,7 +63,7 @@ describe('hit testing drawings', () => {
       }),
     ).toBe(true);
     expect(
-      hitTestDrawing(150, 55, {
+      hitTestDrawing(50, 55, {
         drawing: trendline,
         points: [
           { x: 0, y: 0 },

@@ -20,7 +20,7 @@ export default defineConfig({
     {
       name: 'desktop-chromium',
       use: { ...devices['Desktop Chrome'] },
-      testIgnore: /live-smoke/,
+      testIgnore: /live-smoke|mobile/,
     },
     {
       name: 'mobile-chromium',

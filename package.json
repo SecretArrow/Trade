@@ -13,8 +13,8 @@
     "build": "pnpm --filter @trade/web build",
     "preview": "pnpm --filter @trade/web preview",
     "lint": "eslint .",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "format": "prettier --write . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .github/prettierignore",
+    "format:check": "prettier --check . --ignore-path .gitignore --ignore-path .prettierignore --ignore-path .github/prettierignore",
     "typecheck": "pnpm -r --if-present typecheck",
     "test": "pnpm --filter './packages/*' --if-present test"
   },

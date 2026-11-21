@@ -44,7 +44,11 @@ export function stochastic(
     const l = ll[i];
     if (h === null || l === null) return null;
     if (h === l) return 50;
-    return ((c - l) / (h - l)) * 100;
+    // Clamp to [0, 100] to absorb floating-point drift at the boundaries
+    // (close == highest high or close == lowest low can otherwise round to
+    // 100.00000000000001 or -0.00000000000001 on some engines).
+    const v = ((c - l) / (h - l)) * 100;
+    return Math.max(0, Math.min(100, v));
   });
   const k = smaValues(
     raw.map((x) => x ?? 0),
@@ -73,7 +77,8 @@ export function stochRsi(
     const l = ll[i];
     if (r === null || h === null || l === null) return null;
     if (h === l) return 50;
-    return ((r - l) / (h - l)) * 100;
+    const v = ((r - l) / (h - l)) * 100;
+    return Math.max(0, Math.min(100, v));
   });
   const k = smaValues(
     raw.map((x) => x ?? 0),
