@@ -1,0 +1,46 @@
+name: Provider smoke test
+
+on:
+  schedule:
+    - cron: '17 */6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: Ping all provider endpoints
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+      - name: Run provider smoke checks
+        run: |
+          mkdir -p artifacts
+          node scripts/provider-smoke.mjs > artifacts/report.md || echo 'smoke script error, see job log' >> artifacts/report.md
+          cat artifacts/report.md
+      - name: Upload report artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: provider-status
+          path: artifacts/report.md
+          retention-days: 30
+      - name: Update status issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create provider-status --color 0e8a16 --description 'Living provider availability report' 2>/dev/null || true
+          existing=$(gh issue list --label provider-status --state open --json number --jq '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue edit "$existing" --body-file artifacts/report.md
+          else
+            gh issue create --title 'Provider status report' --body-file artifacts/report.md --label provider-status
+          fi

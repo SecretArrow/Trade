@@ -1,0 +1,27 @@
+# dependencies
+node_modules/
+
+# build outputs
+dist/
+coverage/
+*.tsbuildinfo
+.vite/
+.eslintcache
+
+# e2e artifacts
+playwright-report/
+test-results/
+blob-report/
+
+# env & secrets
+.env
+.env.*
+!.env.example
+.secrets/
+
+# internal research images must not enter the repo
+docs/internal/images/
+
+# misc
+.DS_Store
+*.local

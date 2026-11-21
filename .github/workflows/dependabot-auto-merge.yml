@@ -1,0 +1,38 @@
+name: Dependabot auto-merge
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for patch updates
+    if: github.actor == 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Enable auto-merge for patch-level bumps
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          from_version=$(echo "$PR_TITLE" | grep -oE 'from [0-9]+(\.[0-9]+)+' | awk '{print $2}' | tail -1)
+          to_version=$(echo "$PR_TITLE" | grep -oE 'to [0-9]+(\.[0-9]+)+' | awk '{print $2}' | tail -1)
+          if [ -z "$from_version" ] || [ -z "$to_version" ]; then
+            echo 'Not a version-bump PR; skipping.'
+            exit 0
+          fi
+          from_parts=(${from_version//./ })
+          to_parts=(${to_version//./ })
+          if [ "${from_parts[0]}" = "${to_parts[0]}" ] && [ "${from_parts[1]}" = "${to_parts[1]}" ]; then
+            echo "Patch-level bump detected ($from_version -> $to_version); enabling auto-merge."
+            gh pr merge --auto --squash "$PR_URL"
+          else
+            echo "Major/minor bump detected ($from_version -> $to_version); manual review required."
+          fi
