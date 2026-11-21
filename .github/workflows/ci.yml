@@ -184,9 +184,11 @@ jobs:
       - name: Build web app
         run: pnpm build
       - name: Install browsers
-        run: pnpm --filter @trade/e2e exec playwright install --with-deps chromium webkit
+        run: |
+          pnpm --filter @trade/e2e exec playwright install --with-deps chromium webkit \
+            || pnpm --filter @trade/e2e exec playwright install --with-deps chromium webkit
       - name: Run Playwright
-        run: pnpm --filter @trade/e2e test --project=${{ matrix.project }}
+        run: pnpm --filter @trade/e2e test -- --project=${{ matrix.project }}
       - name: Upload Playwright report on failure
         if: failure()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
@@ -219,9 +221,11 @@ jobs:
       - name: Build web app
         run: pnpm build
       - name: Install browsers
-        run: pnpm --filter @trade/e2e exec playwright install --with-deps chromium
+        run: |
+          pnpm --filter @trade/e2e exec playwright install --with-deps chromium \
+            || pnpm --filter @trade/e2e exec playwright install --with-deps chromium
       - name: Run live smoke test
-        run: pnpm --filter @trade/e2e test --project=live-smoke
+        run: pnpm --filter @trade/e2e test -- --project=live-smoke
 
   lighthouse:
     name: Lighthouse budgets (non-blocking)

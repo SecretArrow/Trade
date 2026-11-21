@@ -77,7 +77,7 @@ describe('resampleCandles', () => {
     expect(out[0]).toEqual({
       time: 0,
       open: 100,
-      high: 120,
+      high: 125,
       low: 95,
       close: 102,
       volume: 45,

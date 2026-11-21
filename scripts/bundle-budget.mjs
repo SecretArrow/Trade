@@ -1,4 +1,5 @@
-import { readdirSync, readFileSync, gzipSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
+import { gzipSync } from 'node:zlib';
 import { join } from 'node:path';
 
 const distDir = process.argv[2] ?? 'apps/web/dist';
